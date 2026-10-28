@@ -32,6 +32,13 @@ function ensureTicking(): void {
 /** The full received text for a message (call once per coalesced batch, not per token). */
 export function setStreamTarget(messageId: string, full: string, done = false): void {
   smoother.setTarget(messageId, full, done);
+  // A new take (Regenerate's turn.start, content "") replaces what was shown: the old reply's text stayed on screen,
+  // with the caret, until the first new token (pass 2 J2-04). The smoother restarted it; the store follows now.
+  const shown = streamText.getState().text[messageId];
+  if (shown !== undefined && !full.startsWith(shown)) {
+    const v = smoother.visible(messageId) ?? full;
+    streamText.setState((s) => ({ text: { ...s.text, [messageId]: v } }));
+  }
   if (typeof requestAnimationFrame === "undefined") {
     smoother.flush(messageId);
     streamText.setState((s) => ({ text: { ...s.text, [messageId]: full } }));

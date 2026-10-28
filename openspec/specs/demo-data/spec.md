@@ -77,11 +77,21 @@ Reset SHALL be available as `admin.resetDemo()` on both clients and SHALL do the
   continues the same session and the seed session again, twice
 - **THEN** after each reset every shipped document is `indexed` with one vector per passage, every shipped memory has its
   vector, the user's session and memory (with its vector) are unchanged, no trace reads "(forgotten)", and both
-  sessions take new turns; Delete all data then gives the same fresh demo
+  sessions take new turns; a factory reset then gives the same fresh demo
 
 #### Scenario: Forgotten seed memory comes back
 - **WHEN** the user forgets one of Hana's seed memories, then resets demo data
 - **THEN** Hana's memory list shows that seed memory again
+
+### Requirement: The demo is imported once
+The backend SHALL import the seed on start only into a fresh install: an empty database with no `data/.demo-seeded`
+marker. After the first import, or on any start that finds a world, it SHALL write the marker. A database the user emptied
+(Delete all data) SHALL stay empty across restarts; Restore demo data SHALL bring the demo back, and a factory reset,
+which wipes `data/`, SHALL start fresh.
+
+#### Scenario: Delete all data, then a restart
+- **WHEN** the user deletes every world and the backend restarts
+- **THEN** no world exists, and Restore demo data brings both seed worlds back
 
 ### Requirement: Seed import is validated
 The backend SHALL validate every seed file against the contract schema before writing anything. If any file is invalid, the import SHALL write nothing and SHALL name the file. Imported seed records SHALL be marked as seed records. Seed knowledge passages and seed memories SHALL be searchable by keyword as soon as the import finishes.

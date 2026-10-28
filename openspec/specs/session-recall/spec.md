@@ -20,6 +20,12 @@ When the rolling summary moves past a set of messages, the backend SHALL index t
 - **WHEN** the window drops lines with no key set
 - **THEN** the lines are searchable by keyword only, and no embedding call is made
 
+#### Scenario: Lines with no vector are embedded later
+- **WHEN** indexed lines have no vector in the active space (no key at the drop, a failed embedding, a restart before the
+  vector was written) and the backend starts with a key set, or a key is saved
+- **THEN** those lines are embedded in the background, at most 2,000 per pass in batches per session, and a failure stops
+  the pass until the next trigger
+
 ### Requirement: Indexed lines follow their messages
 An indexed line SHALL follow its message: a regenerate SHALL re-index the new active variant's text, a blocked-reply scrub and a session delete SHALL remove it (its vector zeroed first), and a fork SHALL copy the indexed lines and their vectors of the messages it copies, with no new embedding.
 

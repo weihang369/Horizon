@@ -78,5 +78,5 @@ A test SHALL fail on any console error or warning, or any uncaught page error, o
 When a spec passes on the MockClient and fails on HTTP because the backend shows different data or text, the backend or its seed import SHALL be fixed to match. The spec SHALL NOT be loosened. A difference that needs a contract or UI change SHALL be raised with the user before anything changes.
 
 #### Scenario: Seed text differs
-- **WHEN** the Knowledge spec expects "2 sources · cited 6× in conversations" and the HTTP run shows a different count
+- **WHEN** the Knowledge spec expects "2 sources · cited 4× in conversations" and the HTTP run shows a different count
 - **THEN** the backend's seed data or read model is corrected until both clients show the same text

@@ -22,6 +22,7 @@ from horizon.sessions.modes.common import (
     is_asleep,
     last_user_text,
     message_event,
+    muted_mentions,
     name_of,
     runner,
     speak_then,
@@ -178,17 +179,20 @@ async def send(actor: SessionActor, text: str, mentions: list[str]) -> None:
     mentions = [m for m in mentions if m in members]
 
     async def job() -> None:
-        if await _all_mentions_asleep(actor, mentions):
+        heard = await muted_mentions(actor, mentions)
+        if mentions and not heard:
+            return   # J3-11: only muted characters were addressed; like the asleep case, nobody else answers
+        if await _all_mentions_asleep(actor, heard):
             return   # G1 (every profile): the user addressed someone asleep; nobody else answers
-        if plans_cast(actor) and await _planned(actor, text, mentions, epoch):
+        if plans_cast(actor) and await _planned(actor, text, heard, epoch):
             return
         try:
-            decision, skipped = await _route(actor, text, mentions)
+            decision, skipped = await _route(actor, text, heard)
         except ProviderError:
             return  # a cap refusal pauses the session (design D7); nothing else runs for this send
         if not decision.speakers and policy_of(actor) == "mentioned":
             return  # the UI shows "Mention someone with @…"
-        await run_speakers(actor, decision.speakers, text, forced=set(mentions), decision=decision, skipped=skipped,
+        await run_speakers(actor, decision.speakers, text, forced=set(heard), decision=decision, skipped=skipped,
                            reply_epoch=epoch)
 
     actor.enqueue(job, epoch=epoch)

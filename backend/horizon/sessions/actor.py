@@ -93,6 +93,7 @@ class ModeState:
     verdict_checked: bool = False                 # M11 (debate D14): the resume rule ran on this actor's first command
     debate_armed: bool = False                    # U-43: this actor started or stepped the debate (its chain is its own)
     plan_ahead: tuple[Any, Any, Any, Any] | None = None   # M10 watch (D15): (fingerprint, task, M12's deep work, faces)
+    regenerating: set[str] = field(default_factory=set)   # pass 2 J2-02: messages with a regenerate queued or running
 
 
 class SessionActor:
@@ -319,6 +320,7 @@ class SessionActor:
         self.cancel_background("reactions", "face_check", "plan_ahead", "debate_plan", "debate_plan_late", "host_line",
                                "verdict", "deep")   # M12 (rag D15): deep work started ahead of its turn
         self.mode.plan_ahead = None
+        self.mode.regenerating.clear()   # their queued jobs went with the queue
         self.mode.debate_plan = None   # M11 (debate D8): its call is cancelled with its holding task
         self.mode.host_line = None     # M11 (debate D11): its call is recorded `cancelled`
         self.mode.verdict_work = None  # M11 (debate D14): End with verdict takes it out first, to reuse it

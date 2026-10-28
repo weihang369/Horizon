@@ -349,8 +349,9 @@ class JobScheduler:
                 if state == "gone":
                     return
                 if state == "done":
-                    await self._finish(run)
-                    return
+                    if await self._finish(run):
+                        return
+                    continue   # a Retry queued a task meanwhile: run it
                 await self.rt.clock.sleep(tick)
                 if run.cancelled:
                     return
@@ -358,8 +359,9 @@ class JobScheduler:
                 if state == "gone":
                     return
                 if state == "done":
-                    await self._finish(run)
-                    return
+                    if await self._finish(run):
+                        return
+                    continue   # a Retry queued a task meanwhile: run it
         except asyncio.CancelledError:
             raise
         except Exception:
@@ -439,12 +441,15 @@ class JobScheduler:
         return round(float((await conn.execute(select(func.coalesce(func.sum(u.cost_usd), 0.0))
                                                 .where(u.job_id == job_id))).scalar_one()), 6)
 
-    async def _finish(self, run: Run) -> None:
+    async def _finish(self, run: Run) -> bool:
+        """End the job; False when a Retry put a task back in the queue since the runner looked (pass 2 J5-02)."""
         async with self.rt.db.write() as tx:
             job = (await tx.conn.execute(select(t.generation_jobs).where(J.id == run.job_id))).mappings().first()
             if job is None or job["status"] not in ACTIVE:
-                return
+                return True
             tasks = await self._task_rows(tx.conn, run.job_id)
+            if any(x["status"] in ACTIVE for x in tasks):
+                return False
             ok = sum(1 for x in tasks if x["status"] == "succeeded")
             failed = sum(1 for x in tasks if x["status"] == "failed")
             status = "succeeded" if failed == 0 else "failed" if ok == 0 else "partial"
@@ -460,6 +465,7 @@ class JobScheduler:
             tx.publish(GLOBAL, {"type": "entity.changed", "kind": "job", "id": run.job_id})
             tx.publish(GLOBAL, done)
         self.rt.book.release_job(run.job_id)
+        return True
 
     async def _release_character(self, tx: Any, job_id: str, character_id: str, now: str) -> str | None:
         ch = (await tx.conn.execute(select(t.characters).where(C.id == character_id))).mappings().first()
@@ -553,6 +559,11 @@ class JobScheduler:
             self.rt.book.release_job(job_id)
             raise conflict("This character already has another generation job running.") from e
         run = self.runs.get(job_id)
+        if run is not None and run.cancelled:
+            # Pass 2 J5-02: a Retry inside the cancelled runner's last tick. That runner only exits, so the job (running
+            # again) needs a new one; the old one's `finally` leaves a successor in place.
+            del self.runs[job_id]
+            run = None
         if run is None:
             self.launch(job_id)
         return wire

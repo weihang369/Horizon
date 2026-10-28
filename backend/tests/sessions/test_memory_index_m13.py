@@ -230,3 +230,20 @@ async def test_the_indexing_storm_leaves_no_partial_rows(api: Api) -> None:
     got = await index_rows(api, sid)
     assert len(got) in (0, len(rows))
     assert cut > 0
+
+
+async def test_lines_left_with_no_vector_are_embedded_later(api: Api) -> None:
+    """Pass 2 J4-02 (the user's choice): a line that got no vector (no key, a failed embedding, a restart) is embedded
+    by the backfill that runs at start-up and when a key is saved, so recall's vector search can find it."""
+    from horizon.services.memory.index import backfill_lines
+
+    sid = await dropped_chat(api)
+    rids = [r["rid"] for r in await index_rows(api, sid)]
+    async with api.rt.db.write() as tx:
+        table = spaces.message_vec_table((await spaces.active(tx.conn)).id)
+        for rid in rids:
+            await tx.conn.execute(text(f"DELETE FROM {table} WHERE rid = :r"), {"r": rid})
+    assert await vectors(api, rids) == {}
+    assert await backfill_lines(api.rt) >= len(rids)
+    assert set(await vectors(api, rids)) == set(rids)
+    assert await backfill_lines(api.rt) == 0

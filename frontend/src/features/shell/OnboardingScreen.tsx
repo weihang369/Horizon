@@ -116,11 +116,11 @@ function KeyStep({ onDone, onBack }: { onDone: (to: Route) => void; onBack: () =
     setError(null);
     try {
       const st = await client.settings.setKey(k);
+      saveKeyHint(k); // the stored key's last 4, rejected or not, as Settings → Connection keeps them (J1-04)
       if (st.openRouterKeyStatus === "invalid") {
         setError("That key was rejected by OpenRouter.");
         return;
       }
-      saveKeyHint(k);
       toast({ variant: "success", text: "Key saved on this machine. Live mode is on." });
       onDone({ name: "worlds" });
     } catch (e) {

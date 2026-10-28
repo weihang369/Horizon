@@ -194,3 +194,79 @@ async def test_step_in_at_the_turn_cap_keeps_the_episode_ended(api: Api) -> None
     user = [m for m in snap["messages"] if m["author"]["type"] == "user"]
     assert any(m["seq"] > user[-1]["seq"] for m in chars(snap["messages"]))
     await assert_reduces(api, sid)
+
+
+
+async def test_speak_next_on_an_asleep_character_keeps_the_scene_playing(api: Api) -> None:
+    """Pass 2 J3-02: the nudge ran a turn that couldn't speak, set no pace timer, and the scene stopped while it still
+    showed "On air". The nudge is dropped with the asleep note, and the scene goes on."""
+    from sqlalchemy import update
+
+    from horizon.db import tables as t
+
+    await api.set_key()
+    trio = ["chr_seedHana", "chr_seedTakeshi", "chr_seedRin"]
+    config = {"premise": "Rainy afternoon.", "maxTurns": 40, "paceMs": 500, "openingSpeaker": "auto"}
+    sid = (await create(api, "watch", trio, world="wld_seedSunnyHollow", config=config))["session"]["id"]
+    await api.drive(6000)
+    async with api.rt.db.write() as tx:
+        await tx.conn.execute(update(t.characters).where(t.characters.c.id == "chr_seedRin").values(
+            energy_current=0.0, energy_as_of=api.rt.now_iso()))
+    await command(api, sid, "next-speaker", {"characterId": "chr_seedRin"})
+    before = len(chars(await messages(api, sid)))
+    await api.drive(60000)
+    snap = await snapshot(api, sid)
+    assert snap["session"]["state"]["status"] == "playing"
+    assert len(chars(snap["messages"])) > before + 3
+    assert any("asleep" in str(m.get("content")) and m.get("targetCharacterId") == "chr_seedRin"
+               for m in snap["messages"])
+
+
+
+async def test_a_scene_left_playing_by_a_restart_comes_back_paused(make_api: Any, tmp_path: Any) -> None:
+    """Pass 2 J3-03: the chain of turns lived in the old process's pace timer, so the scene showed "On air" and never
+    moved. It now comes back paused, and Play goes on from there."""
+    data = tmp_path / "restart"
+    a: Api = await make_api(data_dir=data)
+    await a.set_key()
+    config = {"premise": "Rainy afternoon.", "maxTurns": 20, "paceMs": 500, "openingSpeaker": "auto"}
+    sid = (await create(a, "watch", ["chr_seedHana", "chr_seedTakeshi"], world="wld_seedSunnyHollow",
+                        config=config))["session"]["id"]
+    await a.drive(8000)
+    await a.rt.stop()
+    b: Api = await make_api(data_dir=data)
+    snap = await snapshot(b, sid)
+    assert snap["session"]["status"] == "paused" and snap["session"]["pausedReason"] == "navigated_away"
+    assert snap["session"]["state"]["status"] == "paused"
+    before = len(chars(await messages(b, sid)))
+    await command(b, sid, "watch/play")
+    await b.drive(10000)
+    assert len(chars(await messages(b, sid))) > before
+    await assert_reduces(b, sid)
+
+
+async def test_a_scene_nobody_watches_pauses_after_the_grace(api: Api) -> None:
+    """Pass 2 J3-07 (the user's choice): the tab closed (its stream's last subscriber gone) for 30 s pauses the scene
+    with `navigated_away`, as leaving its screen does; a reload within the grace keeps it playing."""
+    from horizon.events.bus import session_channel
+
+    await api.set_key()
+    config = {"premise": "Rainy afternoon.", "maxTurns": 40, "paceMs": 500, "openingSpeaker": "auto"}
+    sid = (await create(api, "watch", ["chr_seedHana", "chr_seedTakeshi"], world="wld_seedSunnyHollow",
+                        config=config))["session"]["id"]
+    bus, ch = api.rt.bus, session_channel(sid)
+    tab = bus.subscribe(ch)
+    await api.drive(4000)
+    bus.unsubscribe(tab)
+    await api.drive(10_000)
+    tab = bus.subscribe(ch)                       # a reload inside the grace
+    await api.drive(31_000)
+    assert (await snapshot(api, sid))["session"]["status"] == "active"
+    bus.unsubscribe(tab)                          # the tab closes
+    await api.drive(31_000)
+    snap = await snapshot(api, sid)
+    assert snap["session"]["status"] == "paused" and snap["session"]["pausedReason"] == "navigated_away"
+    n = len(chars(await messages(api, sid)))
+    await api.drive(20_000)
+    assert len(chars(await messages(api, sid))) == n   # nothing more is played, or paid for
+    await assert_reduces(api, sid)

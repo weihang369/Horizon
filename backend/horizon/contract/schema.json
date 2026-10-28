@@ -1663,6 +1663,9 @@
             "jobId": {
               "type": "string"
             },
+            "paused": {
+              "type": "boolean"
+            },
             "scope": {
               "enum": [
                 "daily",
@@ -1685,7 +1688,8 @@
             "type",
             "scope",
             "spentUsd",
-            "capUsd"
+            "capUsd",
+            "paused"
           ],
           "type": "object"
         },

@@ -100,7 +100,7 @@ An unknown session SHALL be rejected with 404 before the stream opens.
 - **THEN** the next event it receives has `seq` 31, and the reply's text it assembles equals the stored message's content
 
 ### Requirement: Budget events on the global stream
-The global stream SHALL carry `budget.warning { scope, spentUsd, capUsd }` when spend crosses a warning line, and `budget.reached { scope, spentUsd, capUsd, sessionId?, jobId? }` when a paid call is refused by a cap (see `budget-caps`). Each SHALL validate as a `GlobalEvent`.
+The global stream SHALL carry `budget.warning { scope, spentUsd, capUsd }` when spend crosses a warning line, and `budget.reached { scope, spentUsd, capUsd, paused, sessionId?, jobId? }` when a paid call is refused by a cap (see `budget-caps`); `paused` SHALL be true only when that refusal paused the live sessions, so the Budget reached dialog says "paused" only then. Each SHALL validate as a `GlobalEvent`.
 
 #### Scenario: Warning delivered
 - **WHEN** a recorded call moves daily spend across 80 % of the cap while a global subscriber is connected

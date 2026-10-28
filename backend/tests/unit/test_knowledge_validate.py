@@ -94,3 +94,11 @@ def test_size_errors_carry_the_limit() -> None:
     e = v.too_large_file(11 * 1024 * 1024)
     assert e.status == 413 and e.code == "validation" and (e.details or {})["limit"] == 10485760
     assert (v.too_many_sources().details or {})["limit"] == 20
+
+
+
+def test_a_lone_surrogate_in_pasted_text_is_replaced_not_a_500() -> None:
+    """Pass 2 J4-05: half an emoji (JSON allows a lone surrogate) can't be stored as UTF-8; it becomes U+FFFD, as the
+    browser's TextEncoder makes it in the mock, and a whole pair stays the emoji."""
+    p = v.check_text("Notes \ud83d", "hi \ud83d there 😀")
+    assert p.title == "Notes �" and p.data.decode("utf-8") == "hi � there \U0001F600"

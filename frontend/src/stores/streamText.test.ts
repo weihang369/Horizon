@@ -23,3 +23,16 @@ describe("clearStream", () => {
     expect(streamText.getState().text.msg_mid).toBeUndefined();
   });
 });
+
+
+describe("setStreamTarget", () => {
+  it("a new take of a finished reply starts blank, not on the old text (pass 2 J2-04)", () => {
+    vi.stubGlobal("requestAnimationFrame", (cb: FrameRequestCallback) => frames.push(cb));
+    setStreamTarget("msg_regen", "Old full reply.", true);
+    run(200);
+    expect(streamText.getState().text.msg_regen).toBe("Old full reply.");
+    setStreamTarget("msg_regen", "", false);   // Regenerate's turn.start
+    expect(streamText.getState().text.msg_regen).toBe("");
+    clearStream(["msg_regen"]);
+  });
+});

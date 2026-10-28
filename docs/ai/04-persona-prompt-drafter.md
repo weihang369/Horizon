@@ -407,7 +407,9 @@ renders the same block).*
 
 **Decision:**
 - **The draft schema adds** `exampleLines` (2–3 short lines; the contract allows 0–3) and `relationshipToUser` (for
-  the `companion` intent; empty, and then omitted, for the others).
+  the `companion` intent; empty, and then omitted, for the others). It is written to the user and starts with "your"
+  ("your favourite late-night radio host"), the contract's convention and the way the persona reads it (v1.1 pass 2
+  J3-01: the first rule asked for the user's side, which the persona then read backwards).
 - **The user message adds** the world's name, the names already used by characters in that world, and the You card
   (so a companion's relationship fits who the user is in this world).
 - **The system prompt adds:**

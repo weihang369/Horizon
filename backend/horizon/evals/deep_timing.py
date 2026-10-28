@@ -222,7 +222,7 @@ async def one_on_one(env: RunEnv, c: Any, rec: Recorder, arm: str, n: int, res: 
         if cid not in sessions:
             sid = await open_session(env, c, str(rows[cid]["world_id"]), "one_on_one", [cid])
             if sid is None:
-                res.status = "failed"
+                res.status = "incomplete" if env.refused else "failed"
                 break
             sessions[cid] = sid
         row = await Latency.guarded(env, Latency().one(env, c, sessions[cid], cid, text))
@@ -239,7 +239,7 @@ async def group(env: RunEnv, c: Any, rec: Recorder, n: int, res: Result) -> list
 
     sid = await open_session(env, c, "wld_seedMeridian", "group", list(MERIDIAN))
     if sid is None:
-        res.status = "failed"
+        res.status = "incomplete" if env.refused else "failed"
         return []
     for text in messages(None, n):
         if await env.over_budget():
@@ -300,10 +300,11 @@ async def debate(env: RunEnv, rec: Recorder, n: int, res: Result) -> list[str]:
 
 
 async def open_session(env: RunEnv, c: Any, world: str, mode: str, cast: list[str]) -> str | None:
-    from horizon.evals.content import wait_idle
+    from horizon.evals.content import budget_code, wait_idle
 
     r = await c.post(f"{API}/sessions", json={"worldId": world, "mode": mode, "characterIds": cast})
     if r.status_code != 201:
+        env.refused = budget_code(r)   # the run's cap: the caller reports incomplete, not failed (as `blended.quick`)
         return None
     sid = str(r.json()["session"]["id"])
     await wait_idle(env, sid)

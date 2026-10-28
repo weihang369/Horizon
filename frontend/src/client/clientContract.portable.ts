@@ -228,6 +228,11 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
       expect(chars(snap.messages).length).toBeGreaterThan(10);
     });
 
+    test("M3", "a cast naming one character twice is refused with validation (pass 2 J3-05)", async () => {
+      const { c } = await make({ key: true });
+      expect(await code(c.sessions.create({ worldId: "wld_seedSunnyHollow", mode: "group", characterIds: ["chr_seedHana", "chr_seedHana"] }))).toBe("validation");
+    });
+
     test("M3", "group: @mentioning an exhausted character gives an asleep note + energy_exhausted (ENG-04)", async () => {
       const { c, tick, events, watch, setScenario } = await make({ key: true });
       await setScenario("character_exhausted");
@@ -254,6 +259,19 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
       const msgs = await c.sessions.messages(s.session.id);
       expect(msgs.filter((m) => m.kind === "system_note" && /Takeshi is asleep/.test(m.content))).toHaveLength(1);
       expect(chars(msgs)).toHaveLength(before);   // Hana doesn't step in for him
+    });
+
+    test("M10", "group: a muted character who is @mentioned stays silent, with a note (pass 2 J3-11)", async () => {
+      const { c, tick } = await make({ key: true });
+      const s = await c.sessions.create({ worldId: "wld_seedSunnyHollow", mode: "group", characterIds: ["chr_seedHana", "chr_seedTakeshi"] });
+      await tick(6000);
+      await c.chat.muteParticipant(s.session.id, "chr_seedTakeshi", true);
+      const before = chars(await c.sessions.messages(s.session.id)).length;
+      await c.chat.send(s.session.id, "Dad, dinner?", { mentions: ["chr_seedTakeshi"] });
+      await tick(15000);
+      const msgs = await c.sessions.messages(s.session.id);
+      expect(msgs.filter((m) => m.kind === "system_note" && m.content === "Takeshi is muted.")).toHaveLength(1);
+      expect(chars(msgs)).toHaveLength(before);
     });
 
     test("M10", "group: a message sent in the gap supersedes the unannounced second reply (doc 07 G5)", async () => {
@@ -659,6 +677,10 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
       expect(e.code).toBe("validation");
       expect(await code(c.characters.addKnowledge("chr_seedHana", { file: new File(["%PDF-1.7"], "notes.html", { type: "text/html" }) }))).toBe("validation");
       expect(await code(c.characters.addKnowledge("chr_seedHana", { file: new File(["not a pdf"], "fake.pdf", { type: "application/pdf" }) }))).toBe("validation");
+      // pass 2 J4-04: a ZIP with no word/document.xml (a renamed spreadsheet) and a renamed binary
+      const zip = new Uint8Array([0x50, 0x4b, 0x03, 0x04, ...new TextEncoder().encode("xl/workbook.xml")]);
+      expect(await code(c.characters.addKnowledge("chr_seedHana", { file: new File([zip], "report.docx") }))).toBe("validation");
+      expect(await code(c.characters.addKnowledge("chr_seedHana", { file: new File([new Uint8Array([0x68, 0x69, 0x00, 0xff, 0xfe])], "notes.txt", { type: "text/plain" }) }))).toBe("validation");
       expect((await c.characters.knowledge("chr_seedHana")).length).toBe(before);
     });
 

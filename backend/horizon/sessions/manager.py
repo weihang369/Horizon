@@ -6,8 +6,11 @@
   held), for the 409 `conflict` with `details.activeSessionId`.
 - The daily cap (STATE-06, OQ-11): when a recorded call crosses the cap, or a call is refused by it, every active live
   session pauses with `daily_budget` (a reply already streaming finishes). The cap then counts as reached for that day
-  and cap until spend is below it again, which a later day or a raised cap allows (`cap_blocked`).
+  and cap until spend is below it again, which a later day or a raised cap allows, or until money held for calls in
+  flight then is released (`cap_blocked`).
 - `budget.warning` for a call made by a session is mirrored onto that session's stream.
+- Pass 2 J3-07 (the user's choice): a watch or debate whose stream has had no subscriber for `memory.leaveGraceMs`
+  (a closed tab, a crashed browser) pauses with `navigated_away`, as leaving its screen does, so it stops spending.
 """
 
 from __future__ import annotations
@@ -17,6 +20,8 @@ import contextlib
 import logging
 from typing import TYPE_CHECKING, Any
 
+from horizon.domain import budget
+from horizon.events.bus import session_channel
 from horizon.gateway.context import CallContext
 from horizon.gateway.pipeline import RecordResult
 from horizon.sessions.actor import SessionActor
@@ -27,6 +32,7 @@ if TYPE_CHECKING:
     from horizon.runtime import Runtime
 
 log = logging.getLogger("horizon.sessions")
+STREAM_PREFIX = "session:"
 
 
 class LiveSessionManager:
@@ -36,7 +42,9 @@ class LiveSessionManager:
         self.lock = asyncio.Lock()
         self.lock_create = asyncio.Lock()
         self.runner = TurnRunner(rt)
-        self._refused: tuple[str, float] | None = None   # (local day, cap) of the last cap refusal
+        # (local day, cap, the refused call's estimate) of the last cap refusal
+        self._refused: tuple[str, float, float] | None = None
+        self._unwatched: dict[str, asyncio.Task[None]] = {}
 
     # ── actors ──
     async def get(self, sid: str) -> SessionActor:
@@ -55,6 +63,37 @@ class LiveSessionManager:
             if runs is not None and runs.started:   # M13 (memory D7 trigger 5): a shared character's other sitting
                 self.rt.spawn(f"memory_opened:{sid}", runs.opened(sid))
             return actor
+
+    # ── a scene nobody watches (pass 2 J3-07) ──
+    def watch_streams(self) -> None:
+        self.rt.bus.watch(STREAM_PREFIX, self._on_first, self._on_drained)
+
+    def _on_first(self, channel: str) -> None:
+        g = self._unwatched.pop(channel[len(STREAM_PREFIX):], None)
+        if g is not None:
+            g.cancel()
+
+    def _on_drained(self, channel: str) -> None:
+        sid = channel[len(STREAM_PREFIX):]
+        actor = self.peek(sid)
+        if actor is None or actor.session["mode"] not in ("watch", "debate") or sid in self._unwatched:
+            return
+        self._unwatched[sid] = self.rt.spawn(f"unwatched:{sid}", self._pause_unwatched(sid))
+
+    async def _pause_unwatched(self, sid: str) -> None:
+        from horizon.sessions.lifecycle import leave
+
+        try:
+            await self.rt.clock.sleep(float(self.rt.runtime_cfg.runtime.memory.leave_grace_ms) / 1000)
+        finally:
+            if self._unwatched.get(sid) is asyncio.current_task():
+                del self._unwatched[sid]
+        if self.peek(sid) is None or self.rt.bus.subscriber_count(session_channel(sid)) > 0:
+            return
+        try:
+            await leave(self.rt, sid)   # an active non-seed session only; a streaming reply finishes
+        except Exception:
+            log.exception("pausing the unwatched session %s failed", sid)
 
     def peek(self, sid: str) -> SessionActor | None:
         a = self.actors.get(sid)
@@ -83,6 +122,9 @@ class LiveSessionManager:
         return None
 
     async def shutdown(self) -> None:
+        for g in list(self._unwatched.values()):
+            g.cancel()
+        self._unwatched.clear()
         actors = list(self.actors.values())
         self.actors.clear()
         for a in actors:
@@ -97,11 +139,15 @@ class LiveSessionManager:
     async def cap_blocked(self) -> bool:
         """Today's spend has reached the cap, or a call was refused by this cap today (spend can't fit any more)."""
         cap = self.rt.caps().daily_cap_usd
-        if self._refused is not None and self._refused != (self._today(), cap):
+        if self._refused is not None and self._refused[:2] != (self._today(), cap):
+            self._refused = None
+        spent = await self.rt.gateway.ledger.spent_today()
+        # Pass 2 J1-01: the block lasts while the refused call still wouldn't fit. A refusal caused by money held then
+        # (a running job's estimate) ends when that money is released, not at midnight.
+        if self._refused is not None and not budget.exceeds_daily(spent, self.rt.book.total(), self._refused[2], cap):
             self._refused = None
         if self._refused is not None:
             return True
-        spent = await self.rt.gateway.ledger.spent_today()
         return spent >= cap - 1e-9
 
     def on_spend(self, ctx: CallContext, res: RecordResult) -> None:
@@ -113,10 +159,10 @@ class LiveSessionManager:
         if res.spent_before < cap - 1e-9 <= res.spent_after:
             self.pause_all_for_cap()
 
-    def on_budget(self, event: dict[str, Any], ctx: CallContext) -> None:
+    def on_budget(self, event: dict[str, Any], ctx: CallContext, estimate: float = 0.0) -> None:
         """Gateway hook for budget events: a refusal pauses everything; a session's warning goes on its stream."""
         if event["type"] == "budget.reached" and event.get("scope") == "daily":
-            self._refused = (self._today(), self.rt.caps().daily_cap_usd)
+            self._refused = (self._today(), self.rt.caps().daily_cap_usd, estimate)
             self.pause_all_for_cap()
         elif event["type"] == "budget.warning" and event.get("scope") == "daily" and ctx.session_id:
             actor = self.peek(ctx.session_id)

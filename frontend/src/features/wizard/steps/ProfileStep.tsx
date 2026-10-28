@@ -10,7 +10,7 @@ import { cx } from "@/ui/cx";
 import { ActionBar } from "../ActionBar";
 import { useWizard } from "../context";
 import { Section, TagInput } from "../fields";
-import { cancelJob, isRunning, rememberJob, startGeneration } from "../generate";
+import { cancelJob, isRunning, rememberJob, startGeneration, useJobWait } from "../generate";
 import { gateFrom, validateProfile } from "../gates";
 import type { ProfileField } from "../options";
 import { PromptPreview } from "./PromptPreview";
@@ -27,6 +27,7 @@ export function ProfileStep() {
   const [showPrompt, setShowPrompt] = useState(false);
   const [regen, setRegen] = useState<{ field: ProfileField; jobId: string } | null>(null);
   const regenJob = useJob(regen?.jobId).data;
+  const wait = useJobWait(c?.id);
   const edited = new Set(work.w.editedFields);
 
   // A regenerated field lands: copy just that field from the server copy (CHR-04 AC2).
@@ -62,8 +63,9 @@ export function ProfileStep() {
   };
   const regenProps = (field: ProfileField) => ({
     onRegenerate: () => regenerate(field),
-    regenerateLabel: `Regenerate ${field} with AI`,
+    regenerateLabel: wait ?? `Regenerate ${field} with AI`,
     regenerateText: "AI rewrite",
+    regenerateDisabled: !!wait,
     edited: edited.has(field),
     readOnly: regen?.field === field,
   });

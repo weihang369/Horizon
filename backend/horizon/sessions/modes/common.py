@@ -65,6 +65,16 @@ async def asleep_note(actor: SessionActor, character_id: str, *, skipping: bool,
         "code": "energy_exhausted", "message": f"{name} is asleep (⚡ 0).", "retryable": False, "messageId": msg["id"]}})
 
 
+async def muted_mentions(actor: SessionActor, mentions: list[str]) -> list[str]:
+    """Pass 2 J3-11 (the user's choice: mute wins): a muted character never speaks, even when @mentioned. Each muted
+    mention gets "{name} is muted." and is dropped; the rest are returned."""
+    muted = {p["characterId"] for p in actor.session["participants"] if p.get("mutedByUser")}
+    for m in mentions:
+        if m in muted:
+            await actor.emit(message_event(note(actor, f"{await name_of(actor, m)} is muted.", targetCharacterId=m)))
+    return [m for m in mentions if m not in muted]
+
+
 async def speak_then(actor: SessionActor, spec: TurnSpec, *, prefetch: Any = None) -> TurnOutcome:
     """One turn, then the turn gap before the next queued turn (the mock's `speakThen`). M14 (safety D10): the gap
     counts from the stream's end, so the output check's time is hidden in it."""

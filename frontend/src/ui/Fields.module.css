@@ -51,7 +51,8 @@
   background: var(--ink-500);
   clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
 }
-.regen:hover { color: var(--paper-50); }
+.regen:hover:not(:disabled) { color: var(--paper-50); }
+.regen:disabled { opacity: 0.5; cursor: not-allowed; }
 .hint { font-size: 12px; color: var(--paper-300); }
 .error { font-size: 13px; color: var(--signal-err); display: flex; gap: 6px; align-items: center; }
 

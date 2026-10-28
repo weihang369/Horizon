@@ -137,7 +137,9 @@ class DocsBlock:
         out: list[dict[str, Any]] = []
         for n, hits in self.passages.items():
             h = hits[0]
-            c: dict[str, Any] = {"n": n, "sourceId": h.source_id, "title": strip_extension(untag(h.title)),
+            # the source's own title, extension kept, as the naive engine stores it: the chip's PDF / DOCX glyph reads
+            # it (pass 2 J4-06); only the prompt's passage header drops the extension
+            c: dict[str, Any] = {"n": n, "sourceId": h.source_id, "title": untag(h.title),
                                  "type": h.type, "chunkId": h.chunk_id, **({"locator": h.locator} if h.locator else {}),
                                  "quote": quote_window(untag(h.text), self.words)}
             if self.scored:

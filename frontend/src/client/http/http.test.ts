@@ -77,6 +77,11 @@ describe("HttpClient", () => {
     expect(((await c.worlds.list().catch((x: unknown) => x)) as HorizonError).code).toBe("timeout");
   });
 
+  it("an empty 502 from the dev proxy (backend restarting) is a network error, not a provider failure (J6-05)", async () => {
+    const { c } = make(() => new Response("", { status: 502 }));
+    expect(((await c.worlds.list().catch((x: unknown) => x)) as HorizonError).code).toBe("network");
+  });
+
   it("every POST carries a fresh Idempotency-Key, and the network retry reuses it", async () => {
     let n = 0;
     const { c, calls } = make(() => {

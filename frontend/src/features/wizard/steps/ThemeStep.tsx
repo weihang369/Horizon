@@ -9,7 +9,7 @@ import { Composing, ThemePlayer } from "@/features/profile/ThemePlayer";
 import { songCredit } from "@/features/profile/songCredit";
 import { ActionBar } from "../ActionBar";
 import { useWizard } from "../context";
-import { isRunning, startGeneration, useEstimate } from "../generate";
+import { isRunning, startGeneration, useEstimate, useJobWait } from "../generate";
 import { DEFAULT_BRIEF, GENRES, INSTRUMENTS, MOODS } from "../options";
 import { NO_BACKEND } from "@/features/shell/onlineDemo";
 import s from "./steps.module.css";
@@ -22,6 +22,7 @@ export function ThemeStep() {
   const job = useJob(jobs.song).data;
   const brief: SongBrief = work.w.brief ?? song?.brief ?? DEFAULT_BRIEF;
   const est = useEstimate(c ? { characterId: c.id, kind: "song" } : null);
+  const wait = useJobWait(c?.id);
   useEffect(() => {
     if (!work.w.brief && song?.brief) work.setBrief(song.brief);
   }, [song?.brief]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -66,7 +67,7 @@ export function ThemeStep() {
               </div>
             )}
             <div className={s.themeActions}>
-              <Button variant={ready ? "secondary" : "primary"} cost={est ?? undefined} disabled={composing} onClick={compose}>
+              <Button variant={ready ? "secondary" : "primary"} cost={est ?? undefined} disabled={composing || !!wait} title={wait ?? undefined} onClick={compose}>
                 {ready ? "↻ Regenerate (replaces)" : failed ? "Retry compose" : "Compose ▸"}
               </Button>
               {failed && <Button variant="ghost" onClick={() => void goStep("approve")}>Approve without song</Button>}
@@ -75,7 +76,7 @@ export function ThemeStep() {
           </div>
         </div>
       </section>
-      <ActionBar note={composing ? <span className={s.gateNote}>Composing continues in the background.</span> : undefined}>
+      <ActionBar note={composing ? <span className={s.gateNote}>Composing continues in the background.</span> : wait ? <span className={s.gateNote}>{wait}</span> : undefined}>
         <Button variant="primary" size="lg" onClick={() => void goStep("approve")}>Next: Approve ▸</Button>
       </ActionBar>
     </>

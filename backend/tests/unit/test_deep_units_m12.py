@@ -278,7 +278,8 @@ def test_the_block_text_for_two_passages() -> None:
                          "<passage>\n[2] Shift Fatigue Review, § Breaks\nSecond passage.\n</passage>\n\n" + STANDING
                          + "\nWrite 2–4 short messages, each on its own line, about 120 words in all.")
     cites = b.citations()
-    assert [c["n"] for c in cites] == [1, 2] and cites[0]["title"] == "Shift Fatigue Review" and cites[0]["score"] == 0.75
+    # the stored citation keeps the extension (the chip's PDF glyph, pass 2 J4-06); only the prompt header drops it
+    assert [c["n"] for c in cites] == [1, 2] and cites[0]["title"] == "Shift Fatigue Review.pdf" and cites[0]["score"] == 0.75
 
 
 def test_a_planted_closing_tag_is_removed() -> None:

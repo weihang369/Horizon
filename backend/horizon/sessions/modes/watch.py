@@ -96,6 +96,21 @@ async def pick_speaker(actor: SessionActor) -> str | None:
     return None
 
 
+async def drop_dead_nudge(actor: SessionActor) -> None:
+    """Pass 2 J3-02: a Speak next for someone who can't speak (asleep, muted or gone) is dropped, with the asleep note
+    for a sleeper, and the scene picks as usual. Before, the turn ran for them, did nothing, and the chain stopped."""
+    cid = actor.mode.nudge
+    if not cid:
+        return
+    part = next((p for p in actor.session["participants"] if p["characterId"] == cid), None)
+    asleep = part is not None and await is_asleep(actor, cid)
+    if part is not None and not part.get("mutedByUser") and not asleep:
+        return
+    actor.mode.nudge = None
+    if asleep:
+        await asleep_note(actor, cid, skipping=True)
+
+
 def turn(actor: SessionActor, manual: bool = False) -> None:
     """One scene turn. `manual` (Step) runs while paused and doesn't chain."""
     async def job() -> None:
@@ -106,6 +121,7 @@ def turn(actor: SessionActor, manual: bool = False) -> None:
             await actor.emit(*watch_state(actor, {"status": "ended", "nextSpeakerId": None}),
                              {"type": "session.paused", "payload": {"reason": "turn_cap"}})
             return
+        await drop_dead_nudge(actor)
         planned = plans_cast(actor)
         plan: CastPlan | None = None
         pick: ScenePick | None = None
@@ -143,6 +159,12 @@ def turn(actor: SessionActor, manual: bool = False) -> None:
             elif deep is not None:
                 deep.cancel()
         out = await runner(actor).run(actor, spec)
+        if out.status in ("asleep", "missing", "blocked"):
+            # Pass 2 J3-02: the speaker couldn't speak after all (asleep or gone by now). The scene goes on with the
+            # next one at the usual pace instead of stopping while it still shows "On air".
+            if not manual and not actor.held:
+                actor.after(float(cfg_of(actor).get("paceMs", 1500)), lambda: turn(actor))
+            return
         if out.status not in ("complete", "interrupted", "error"):
             return
         taken = int(state_of(actor)["turnsTaken"]) + 1

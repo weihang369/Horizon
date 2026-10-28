@@ -53,6 +53,11 @@ export function useCharacterJobs(characterId: string | null | undefined): JobMap
 
 // ── Estimates ────────────────────────────────────────────────────────────────
 const estCache = new Map<string, number>();
+// An estimate depends on the generation mode (Lean / Standard) and on what the character has (a blink): a settings or
+// character change, or a finished job, makes the cached ones stale (pass 2 J5-08)
+client.onGlobal?.((e) => { // optional: unit tests stub the client without it
+  if (e.type === "job.done" || (e.type === "entity.changed" && (e.kind === "settings" || e.kind === "character"))) estCache.clear();
+});
 
 /** "≈ $X.XX" for a Generate button (CHR-13 AC1). null until known. */
 export function useEstimate(input: StartJobInput | null): number | null {
@@ -74,6 +79,8 @@ export function useEstimate(input: StartJobInput | null): number | null {
 
 // ── Start with confirm ───────────────────────────────────────────────────────
 let confirmedThisLaunch = false;
+/** Characters with a start in flight: a second press (double click, Enter) is dropped, not a 409 (pass 2 J5-09). */
+const starting = new Set<string>();
 /** Test hook. */
 export const resetLaunchConfirm = () => void (confirmedThisLaunch = false);
 
@@ -83,10 +90,17 @@ export const resetLaunchConfirm = () => void (confirmedThisLaunch = false);
  * cancelled/blocked (the caller keeps every input).
  */
 export async function startGeneration(input: StartJobInput, label: string, opts: { confirm?: boolean } = {}): Promise<GenerationJob | null> {
+  if (starting.has(input.characterId)) return null;
+  starting.add(input.characterId);
   try {
     const settings = await client.settings.get();
     if (settings.openRouterKeyStatus !== "set") {
       openOverlay("O05", { reason: settings.openRouterKeyStatus === "invalid" ? undefined : `${label} needs your OpenRouter key.` });
+      return null;
+    }
+    const busy = (await client.jobs.listActive()).find((j) => j.characterId === input.characterId && isRunning(j));
+    if (busy) {
+      toast({ variant: "info", text: waitNote(busy) }); // J5-07: the paths a disabled button doesn't cover (Enter, Retry)
       return null;
     }
     if (opts.confirm !== false && settings.cost.confirmBeforeGenerate && !confirmedThisLaunch) {
@@ -115,6 +129,8 @@ export async function startGeneration(input: StartJobInput, label: string, opts:
     if (await offerPortraitFirst(err, input.characterId)) return null;
     reportError(err, { context: `${label} needs your OpenRouter key.` });
     return null;
+  } finally {
+    starting.delete(input.characterId);
   }
 }
 
@@ -164,3 +180,23 @@ export const JOB_VERB: Record<GenerationJobKind, string> = {
 };
 
 export const isRunning = (j: GenerationJob | null | undefined): boolean => !!j && (j.status === "queued" || j.status === "running");
+
+const JOB_NOUN: Record<GenerationJobKind, string> = {
+  profile_draft: "the draft",
+  profile_regenerate: "the rewrite",
+  portrait_candidates: "the portrait",
+  portrait_tweak: "the tweak",
+  emotion_set: "the emotions",
+  emotion_regenerate: "the new face",
+  song: "the theme",
+};
+const waitNote = (j: GenerationJob): string => `Waiting for ${JOB_NOUN[j.kind]} to finish…`;
+
+/**
+ * Pass 2 J5-07 (the user's choice): a character runs one generation job at a time (the backend refuses a second with
+ * 409), so its generate buttons wait while one runs. The note to show ("Waiting for the emotions to finish…"), or null.
+ */
+export function useJobWait(characterId: string | null | undefined): string | null {
+  const busy = (useActiveJobs().data ?? []).find((j) => j.characterId === characterId && isRunning(j));
+  return busy ? waitNote(busy) : null;
+}

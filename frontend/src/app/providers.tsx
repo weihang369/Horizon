@@ -46,7 +46,7 @@ export function useAppBoot(): void {
           toast({ variant: "warn", text: `${e.scope === "daily" ? "Today's" : "Creation"} spend is at ${Math.round((e.spentUsd / e.capUsd) * 100)} % of the cap.` });
           break;
         case "budget.reached":
-          openOverlay("O21", { scope: e.scope, spentUsd: e.spentUsd, capUsd: e.capUsd, sessionId: e.sessionId });
+          openOverlay("O21", { scope: e.scope, spentUsd: e.spentUsd, capUsd: e.capUsd, paused: e.paused, sessionId: e.sessionId });
           break;
         case "job.done": {
           const who = e.characterName ? `${e.characterName}: ` : "";

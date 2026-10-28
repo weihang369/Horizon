@@ -352,6 +352,16 @@ export function asleepNote(h: EngineHost, sid: string, cid: string, skipping: bo
   );
 }
 
+/** Pass 2 J3-11 (mute wins): each muted mention gets "{name} is muted." and is dropped; the rest are returned. */
+export function mutedMentions(h: EngineHost, sid: string, mentions: string[]): string[] {
+  const muted = new Set(h.live(sid).state.session.participants.filter((p) => p.mutedByUser).map((p) => p.characterId));
+  for (const m of mentions) {
+    const c = h.db.characters[m];
+    if (muted.has(m)) h.emit(sid, { type: "message", payload: { message: systemNote(h, sid, `${c ? firstName(c) : m} is muted.`, "system_note", { type: "system" }, { targetCharacterId: m }) } });
+  }
+  return mentions.filter((m) => !muted.has(m));
+}
+
 export const speakingCast = (s: Session): string[] => s.participants.filter((p) => !p.mutedByUser).map((p) => p.characterId);
 
 export function setEmotionEvent(cid: string, emotion: Emotion): StreamEvent {

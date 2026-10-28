@@ -280,6 +280,9 @@ class TurnRunner:
             if not info.started:   # cut before turn.start (clear() during the plan or the preamble): nothing to close
                 info.closed = True
             raise
+        except Exception:
+            info.closed = True   # a turn that failed (a write into a deleted session) never keeps the actor generating
+            raise
         finally:
             if planning is not None and not planning.done():   # D8: Stop during the plan leaves nothing running
                 planning.cancel()
@@ -474,13 +477,15 @@ class TurnRunner:
                 finally:
                     await agen.aclose()
         except ProviderError as e:
-            if not info.started:
+            if not info.started and e.code == "daily_budget_exceeded":   # the cap pause (D7) answers a cap refusal
                 await settle_timer()
                 info.closed = True
-                if e.code != "daily_budget_exceeded":  # the cap pause (D7) answers a cap refusal
-                    await actor.emit({"type": "error", "payload": {"code": e.code, "message": e.message,
-                                                                   "retryable": DEFAULT_RETRYABLE.get(e.code, True)}})
                 return TurnOutcome(None, "refused")
+            if not info.started:
+                # Failed before its first token (a 5xx, 429, the first-token timeout, an empty reply): the error goes on
+                # a row of its own and the turn ends, as a stream cut mid-way does. A bare session `error` ended
+                # nothing: "is thinking…" stayed up, Send stayed disabled and the error was never shown (pass 2 J2-01).
+                await self._start(actor, spec, info)
             err = e
         except asyncio.CancelledError:
             if timer is not None and not timer.cancelling():   # settle_timer may have cancelled it already

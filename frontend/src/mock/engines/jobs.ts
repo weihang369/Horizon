@@ -155,6 +155,9 @@ export class JobRunner {
     const h = this.h;
     const c = h.db.characters[input.characterId];
     if (!c) throw new HorizonError("not_found", "Character not found.", { retryable: false });
+    // One active job per character, as the backend's unique index has it (pass 2 J5-07: the mock ran both at once)
+    const active = Object.values(h.db.jobs).find((j) => j.characterId === c.id && (j.status === "queued" || j.status === "running"));
+    if (active) throw new HorizonError("conflict", "This character already has a generation job running.", { retryable: false, details: { activeJobId: active.id } });
     const { plans, parallel } = planTasks(h, input, () => h.newId("task"));
     const estimatedCostUsd = round6(plans.reduce((a, p) => a + p.cost, 0));
     checkJobBudget(h, c, estimatedCostUsd);

@@ -89,13 +89,17 @@ async def test_empty_then_reply(api: Api) -> None:
     assert bodies[-1]["messages"][-1]["content"] in (TRAILING_CUE, bodies[-2]["messages"][-1]["content"])
 
 
-async def test_empty_twice_is_a_retryable_error_and_no_message(api: Api) -> None:
+async def test_empty_twice_is_a_retryable_error_on_an_empty_row(api: Api) -> None:
+    """Pass 2 J2-01: the turn ends on a row of its own, so the typing indicator ends and Regenerate is offered."""
     assert api.rt.fake is not None
     api.rt.fake.queued.extend([sse([], gid="gen-empty-1"), sse([], gid="gen-empty-2")])
     sid = await _naive(api)
-    assert chars(await messages(api, sid)) == []
+    (m,) = chars(await messages(api, sid))
+    assert m["content"] == "" and m["status"] == "interrupted"
     errors = [e for e in await events(api, sid) if e["type"] == "error"]
     assert errors and errors[-1]["payload"]["code"] == "provider_error" and errors[-1]["payload"]["retryable"]
+    assert errors[-1]["payload"]["messageId"] == m["id"]
+    assert [e["type"] for e in await events(api, sid)][-1] != "turn.thinking"
     assert len([r for r in await ledger(api) if r["purpose"] == "reply"]) == 2
 
 

@@ -48,12 +48,14 @@ async def test_a_refused_memory_call_pauses_nothing_and_a_refused_reply_still_do
         await rt.gateway.chat_complete(req, ctx)
     assert e.value.code == "daily_budget_exceeded"
     await api.drive(2000)
-    assert any(g["type"] == "budget.reached" for g in _drain(sub))
+    # pass 2 J1-02: the event says nothing paused, so the dialog doesn't claim it
+    assert [g["paused"] for g in _drain(sub) if g["type"] == "budget.reached"] == [False]
     assert (await snapshot(api, sid))["session"]["status"] == "active"
     # the control: the same refusal for a reply pauses the live session (session-runtime, unchanged)
     with pytest.raises(ProviderError):
         await rt.gateway.chat_complete(req, call_ctx("reply", world_id="wld_seedMeridian", session_id=sid))
     await api.drive(2000)
+    assert [g["paused"] for g in _drain(sub) if g["type"] == "budget.reached"] == [True]
     assert (await snapshot(api, sid))["session"]["pausedReason"] == "daily_budget"
 
 

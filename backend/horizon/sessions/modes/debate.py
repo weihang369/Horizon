@@ -13,6 +13,7 @@ from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Any
 
 from horizon.ai.contexts import DebateMeta, HostKey, LineHint
+from horizon.api.errors import conflict
 from horizon.domain import vclock
 from horizon.sessions import debate_host, debate_plan, debate_verdict
 from horizon.sessions.context import session_context
@@ -675,7 +676,10 @@ async def end_debate(actor: SessionActor, with_verdict: bool) -> None:
 
 
 async def pick(actor: SessionActor, side: str) -> None:
-    """D14: the click only records the side; the verdict is delivered by a job when the work is done."""
+    """D14: the click only records the side; the verdict is delivered by a job when the work is done. Only in the
+    verdict phase (pass 2 J3-04): mid-debate it started a paid verdict call and was used later without asking."""
+    if state_of(actor).get("phase") != "verdict":
+        raise conflict("The pick comes at the verdict.")
     debate_verdict.pick(actor, side)
 
 

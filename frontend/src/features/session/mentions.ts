@@ -4,6 +4,25 @@ import { createStore } from "zustand/vanilla";
 
 export interface MentionCandidate { id: string; name: string }
 
+/**
+ * The name each participant is mentioned by: the first name, or the full name when two first names collide, so
+ * "@Mei" can't stand for both Mei Lin and Mei Tanaka (pass 2 J3-10: the second could never be mentioned). Identical
+ * full names are numbered.
+ */
+export function mentionNames(people: { id: string; full: string; first: string }[]): MentionCandidate[] {
+  const seen = new Map<string, number>();
+  return people.map((p) => {
+    const clash = people.some((q) => q.id !== p.id && q.first === p.first);
+    let name = clash ? p.full.trim() || p.first : p.first;
+    if (clash && people.some((q) => q.id !== p.id && q.full.trim() === p.full.trim())) {
+      const n = (seen.get(name) ?? 0) + 1;
+      seen.set(name, n);
+      if (n > 1) name = `${name} ${n}`;
+    }
+    return { id: p.id, name };
+  });
+}
+
 /** The `@query` being typed at the caret, if any. */
 export function mentionQueryAt(text: string, caret: number): { start: number; query: string } | null {
   const before = text.slice(0, caret);

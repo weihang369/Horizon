@@ -351,12 +351,13 @@ export class MockClient implements HorizonClient {
     s.spentTodayUsd = round6(before + costUsd);
     const cap = s.budget.dailyCapUsd;
     const warnAt = (cap * s.budget.warnAtPct) / 100;
-    if (before < warnAt && s.spentTodayUsd >= warnAt && s.spentTodayUsd < cap) {
+    // budget-caps "Warning on crossing": also when the same call crosses the cap (as the backend; pass 2 J1-03)
+    if (before < warnAt && s.spentTodayUsd >= warnAt) {
       this.global({ type: "budget.warning", scope: "daily", spentUsd: s.spentTodayUsd, capUsd: cap });
       if (sessionId) this.host.emit(sessionId, { type: "budget.warning", payload: { scope: "daily", spentUsd: s.spentTodayUsd, capUsd: cap } });
     }
     if (before < cap && s.spentTodayUsd >= cap) {
-      this.global({ type: "budget.reached", scope: "daily", spentUsd: s.spentTodayUsd, capUsd: cap, sessionId });
+      this.global({ type: "budget.reached", scope: "daily", spentUsd: s.spentTodayUsd, capUsd: cap, paused: true, sessionId });
       for (const live of this.lives.values()) {
         if (live.state.session.status !== "active") continue;
         clearLive(live, { keepCurrentTurn: true });
@@ -931,6 +932,7 @@ export class MockClient implements HorizonClient {
     // NFR-23: a character from another world is reported as missing, never as existing elsewhere.
     if (cast.some((c) => c.worldId !== w.id)) throw notFound("Character");
     if (cast.some((c) => c.status !== "approved")) throw invalid("Drafts and archived characters can't join sessions.");
+    if (new Set(input.characterIds).size !== input.characterIds.length) throw invalid("Each character can join a session once.", { field: "characterIds" });
     const min = input.mode === "one_on_one" ? 1 : 2;
     const max = input.mode === "one_on_one" ? 1 : 5;
     if (cast.length < min || cast.length > max) {
@@ -1114,6 +1116,7 @@ export class MockClient implements HorizonClient {
       const mode = this.liveSession(sid).state.session.mode;
       // a debate argument or a scene line would come back as a chat reply (the backend refuses it too)
       if (mode !== "one_on_one" && mode !== "group") throw conflict("Regenerate is only for 1:1 and group chat.");
+      if (this.liveSession(sid).state.messages[messageId]?.status === "streaming") throw conflict("A reply is still streaming.");
       oneEngine.regenerate(this.host, sid, messageId);
     }),
     setEmotion: (sid, cid, emotion) => this.command(() => {
@@ -1198,7 +1201,12 @@ export class MockClient implements HorizonClient {
     extendRound: (sid) => this.live(() => debateEngine.extendRound(this.host, sid)),
     skipToClosing: (sid) => this.command(() => debateEngine.skipToClosing(this.host, sid)),
     endDebate: (sid, withVerdict) => (withVerdict ? this.live(() => debateEngine.endDebate(this.host, sid, true)) : this.command(() => debateEngine.endDebate(this.host, sid, false))),
-    pickStrongerCase: (sid, side) => this.command(() => debateEngine.pickStrongerCase(this.host, sid, side)),
+    pickStrongerCase: (sid, side) => this.command(() => {
+      // You decide's pick belongs to the verdict phase (pass 2 J3-04): mid-debate it would end the debate at once
+      const st = this.liveSession(sid).state.session.state as { phase?: string } | undefined;
+      if (st?.phase !== "verdict") throw conflict("The pick comes at the verdict.");
+      debateEngine.pickStrongerCase(this.host, sid, side);
+    }),
   };
 
   watch: HorizonClient["watch"] = {

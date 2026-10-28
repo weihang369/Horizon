@@ -30,7 +30,8 @@ export interface MessageRowProps {
   /** Offer ↻ (last character message of a live 1:1 / group session). */
   canRegenerate: boolean;
   /** A 1:1 or group session: an interrupted reply offers Regenerate (CHAT-02 AC3; one chip, audit D-11). Regenerate is a chat
-   * command, so a cut debate argument or scene line offers neither (audit D-11). */
+   * command, so a cut debate argument or scene line offers neither (audit D-11). False too while a turn runs, so a click
+   * never queues a second paid reply behind it (pass 2 J2-02). */
   chat?: boolean;
   /** Row appeared after mount (animate in). */
   fresh: boolean;

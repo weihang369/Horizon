@@ -9,7 +9,7 @@ import { emotionMeta, PortraitCard } from "@/character";
 import { paletteClass } from "@/theme";
 import { Button, IconButton, CloseIcon, Kbd, Tape } from "@/ui";
 import { cx } from "@/ui/cx";
-import { isRunning, rememberJob, startGeneration, useCharacterJobs, useEstimate } from "@/features/wizard/generate";
+import { isRunning, rememberJob, startGeneration, useCharacterJobs, useEstimate, useJobWait } from "@/features/wizard/generate";
 import { useAssetCompareWatcher } from "./compare";
 import s from "./profile-overlays.module.css";
 
@@ -21,6 +21,7 @@ export function EmotionLightbox({ close, characterId, emotion: initial }: Overla
   useAssetCompareWatcher(c, jobs.emotion_regenerate);
   const est = useEstimate({ characterId, kind: "emotion_regenerate", emotions: [emotion] });
   const busyHere = isRunning(regenJob) && regenJob!.tasks.some((t) => t.emotion === emotion);
+  const wait = useJobWait(characterId);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -75,9 +76,9 @@ export function EmotionLightbox({ close, characterId, emotion: initial }: Overla
             <p className={s.lbNote}>Neutral is the locked base portrait. Change it from Edit → Portrait.</p>
           ) : (
             <div className={s.lbActions}>
-              <Button variant="primary" cost={est ?? undefined} disabled={busyHere} onClick={() => void regenerate()}>↻ {ref ? "Regenerate" : "Generate"}</Button>
+              <Button variant="primary" cost={est ?? undefined} disabled={busyHere || !!wait} title={busyHere ? undefined : wait ?? undefined} onClick={() => void regenerate()}>↻ {ref ? "Regenerate" : "Generate"}</Button>
               {ref && (
-                <Button variant="secondary" cost={est ?? undefined} disabled={busyHere} onClick={() => void regenerate("Doesn't look like them: keep identity consistent with the base portrait.")}>
+                <Button variant="secondary" cost={est ?? undefined} disabled={busyHere || !!wait} onClick={() => void regenerate("Doesn't look like them: keep identity consistent with the base portrait.")}>
                   Doesn't look like them
                 </Button>
               )}

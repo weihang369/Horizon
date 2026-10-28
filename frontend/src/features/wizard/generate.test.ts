@@ -5,6 +5,7 @@ import { HorizonError } from "@/contract/errors";
 
 const m = vi.hoisted(() => ({
   start: vi.fn(),
+  active: vi.fn(),
   get: vi.fn(),
   settings: vi.fn(),
   toast: vi.fn(),
@@ -13,7 +14,7 @@ const m = vi.hoisted(() => ({
 }));
 
 vi.mock("@/client", () => ({
-  client: { jobs: { start: m.start, estimate: vi.fn() }, characters: { get: m.get }, settings: { get: m.settings } },
+  client: { jobs: { start: m.start, listActive: m.active, estimate: vi.fn() }, characters: { get: m.get }, settings: { get: m.settings } },
 }));
 vi.mock("@/client/hooks", () => ({ useActiveJobs: () => ({ data: [] }) }));
 vi.mock("@/app/layers", () => ({ openOverlay: vi.fn(), toast: m.toast }));
@@ -31,6 +32,7 @@ describe("startGeneration with a placeholder base (D-90)", () => {
   beforeEach(() => {
     Object.values(m).forEach((f) => f.mockReset());
     m.settings.mockResolvedValue({ openRouterKeyStatus: "set", cost: { confirmBeforeGenerate: false } });
+    m.active.mockResolvedValue([]);
   });
 
   it("offers the portrait step for a draft character", async () => {
@@ -60,5 +62,22 @@ describe("startGeneration with a placeholder base (D-90)", () => {
     await startGeneration({ characterId: "chr_a", kind: "emotion_set" }, "Generate emotions");
     expect(m.toast).not.toHaveBeenCalled();
     expect(m.reportError).toHaveBeenCalledWith(noBase, expect.anything());
+  });
+
+  it("waits for the character's running job instead of a 409 (pass 2 J5-07)", async () => {
+    m.active.mockResolvedValue([{ id: "job_e", characterId: "chr_a", kind: "emotion_set", status: "running" }]);
+    expect(await startGeneration({ characterId: "chr_a", kind: "song" }, "Compose theme")).toBeNull();
+    expect(m.start).not.toHaveBeenCalled();
+    expect(m.toast).toHaveBeenCalledWith({ variant: "info", text: "Waiting for the emotions to finish…" });
+  });
+
+  it("drops a second press while the first start is in flight (pass 2 J5-09)", async () => {
+    let go: (v: unknown) => void = () => {};
+    m.start.mockReturnValue(new Promise((r) => (go = r)));
+    const first = startGeneration({ characterId: "chr_a", kind: "song" }, "Compose theme");
+    expect(await startGeneration({ characterId: "chr_a", kind: "song" }, "Compose theme")).toBeNull();
+    await vi.waitFor(() => expect(m.start).toHaveBeenCalledTimes(1));
+    go({ id: "job_s", characterId: "chr_a", kind: "song" });
+    expect(await first).toMatchObject({ id: "job_s" });
   });
 });

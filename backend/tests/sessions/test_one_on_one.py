@@ -65,6 +65,26 @@ async def test_regenerate_keeps_the_original_and_reduces(api: Api) -> None:
     await assert_reduces(api, sid)
 
 
+async def test_a_second_regenerate_while_one_is_pending_is_refused(api: Api) -> None:
+    """Pass 2 J2-02: during the plan and the wait for the first token the message is still `complete`, so a second
+    click queued a second paid reply. One regenerate per message at a time; the next one is fine once it ends."""
+    await api.set_key()
+    sid = (await create(api, "one_on_one", ["chr_seedAmara"]))["session"]["id"]
+    await api.drive(6000)
+    await command(api, sid, "send", {"text": "Quick question about sleep."})
+    await api.drive(12000)
+    reply = chars(await messages(api, sid))[-1]
+    await command(api, sid, "regenerate", {"messageId": reply["id"]})
+    await command(api, sid, "regenerate", {"messageId": reply["id"]}, status=409)
+    await api.drive(12000)
+    m = next(x for x in await messages(api, sid) if x["id"] == reply["id"])
+    assert len(m["variants"]) == 2
+    await command(api, sid, "regenerate", {"messageId": reply["id"]})
+    await api.drive(12000)
+    m = next(x for x in await messages(api, sid) if x["id"] == reply["id"])
+    assert len(m["variants"]) == 3
+
+
 async def test_paused_one_on_one_auto_resumes(api: Api) -> None:
     await api.set_key()
     sid = (await create(api, "one_on_one", ["chr_seedAmara"]))["session"]["id"]

@@ -19,7 +19,11 @@ router = APIRouter()
 
 MIME = {".svg": "image/svg+xml", ".webp": "image/webp", ".avif": "image/avif", ".png": "image/png", ".jpg": "image/jpeg",
         ".jpeg": "image/jpeg", ".json": "application/json", ".opus": "audio/ogg", ".ogg": "audio/ogg", ".mp3": "audio/mpeg",
-        ".aac": "audio/aac", ".m4a": "audio/mp4"}
+        ".aac": "audio/aac", ".m4a": "audio/mp4",
+        # `npm run demo` serves the built app here too; Windows can map .js to text/plain in its registry, and a module
+        # script with that type is refused (pass 2 J5-10)
+        ".js": "text/javascript", ".mjs": "text/javascript", ".css": "text/css", ".woff2": "font/woff2",
+        ".woff": "font/woff", ".map": "application/json", ".html": "text/html; charset=utf-8"}
 IMMUTABLE = "public, max-age=31536000, immutable"
 
 

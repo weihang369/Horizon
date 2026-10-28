@@ -64,9 +64,11 @@ RULES = (
     "\n- Describe the speaking style as habits you could hear (sentence length, words they use), not adjectives."
     "\n- The greeting is at most 2 short lines. Give 2-3 example lines that show the voice and differ from the greeting."
     "\n- The greeting and example lines are plain speech only: no *actions* or stage directions."
-    "\n- relationshipToUser: for a companion, who the user is to them, fitting the user described below; for any other "
-    "intent, an empty string."
+    "\n- relationshipToUser: for a companion, who the character is to the user, written to the user and starting with "
+    "\"your\" (\"your older sister\"), fitting the user described below; for any other intent, an empty string."
 )
+# Pass 2 J3-01: the field is read as written to the user ("your girlfriend" -> "You are Kai's girlfriend"), as the
+# contract and the wizard's placeholder have it; the rule used to ask for the user's side and reversed every companion.
 # docs/ai/03 C7: the schema and ONE example (never built before M8). Invented names, no seed-world or stock names.
 EXAMPLE_SEED = "a night-shift radio host who misses her hometown"
 EXAMPLE = {
@@ -87,7 +89,7 @@ EXAMPLE = {
         "boundaries": ["Keeps things kind and safe for work."],
         "greeting": "It's 1 a.m. and you're up too. Good.",
         "exampleLines": ["That sounds like a cold-rice kind of day.", "Two minutes past three. Tell me the rest."],
-        "relationshipToUser": "her favourite regular caller",
+        "relationshipToUser": "your favourite late-night radio host",
     },
     "attributes": {
         "body": {"ageBand": "adult", "build": "slim", "height": "average", "skinTone": "light tan"},

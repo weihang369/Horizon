@@ -84,7 +84,7 @@ When the rendered history's last line is the speaker's own, and no other turn cu
 - **THEN** the request's last message is a system cue asking for her next message
 
 ### Requirement: An empty reply is retried once before anything shows
-When a reply stream ends normally with no visible text, the engine SHALL send the same request once more, with the trailing cue added if it was missing, before any event of that turn is emitted. If the second reply is also empty, the turn SHALL end with a retryable `provider_error` and no message. Both calls SHALL keep their ledger rows.
+When a reply stream ends normally with no visible text, the engine SHALL send the same request once more, with the trailing cue added if it was missing, before any event of that turn is emitted. If the second reply is also empty, the turn SHALL end like any reply that fails before its first token: a character message with no text ends `interrupted` and carries a retryable `provider_error`, so the typing indicator ends and the error shows with Regenerate. Both calls SHALL keep their ledger rows.
 
 #### Scenario: First reply empty
 - **WHEN** the first stream ends with `finish_reason: stop` and no content, and the second streams `<e:happy>Hi`
@@ -92,7 +92,7 @@ When a reply stream ends normally with no visible text, the engine SHALL send th
 
 #### Scenario: Both empty
 - **WHEN** both streams end with no content
-- **THEN** no message is created, an `error` event with `provider_error` is emitted, and two ledger rows exist
+- **THEN** one empty character message ends `interrupted`, an `error` event with `provider_error` names it, and two ledger rows exist
 
 ### Requirement: JSON calls repair locally, then retry once
 Every DeepSeek call that returns JSON SHALL:

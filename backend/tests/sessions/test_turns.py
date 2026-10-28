@@ -215,6 +215,22 @@ async def test_mute_and_responder_policy(api: Api) -> None:
     await assert_reduces(api, sid)
 
 
+async def test_a_muted_participant_mentioned_stays_silent(api: Api) -> None:
+    """Pass 2 J3-11 (the user's choice: mute wins): the muted one gets a note, and nobody else answers for them."""
+    await api.set_key()
+    sid = (await create(api, "group", ["chr_seedAmara", "chr_seedVictor"]))["session"]["id"]
+    await command(api, sid, "mute", {"characterId": "chr_seedVictor", "muted": True})
+    await command(api, sid, "send", {"text": "Victor, is the rota fair?", "mentions": ["chr_seedVictor"]})
+    await api.drive(20000)
+    msgs = await messages(api, sid)
+    assert any(m["kind"] == "system_note" and m["content"] == "Victor is muted." for m in msgs)
+    assert chars(msgs) == []
+    await command(api, sid, "send", {"text": "Both of you?", "mentions": ["chr_seedVictor", "chr_seedAmara"]})
+    await api.drive(20000)
+    assert {m["author"]["characterId"] for m in chars(await messages(api, sid))} == {"chr_seedAmara"}
+    await assert_reduces(api, sid)
+
+
 # ── the coalescer's trailing timer, cancelled while it waits to write (docs/ai/checks/m11.md, 10.1) ──
 class GatedEngine:
     """Streams `head`, parks, streams `body` and `tail`, parks, ends. `head` and `tail` are shorter than the coalescer's

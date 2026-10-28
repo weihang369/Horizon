@@ -75,6 +75,10 @@ class Refused(Exception):
     """The prompt compiler refused (an under-18 character): fail without a call."""
 
 
+class Unsent(Exception):
+    """The task was skipped (a cancel) before its call went out: send nothing, bill nothing (pass 2 J5-01)."""
+
+
 async def run_attempt(sched: JobScheduler, run: Run, a: Attempt) -> None:
     rt = sched.rt
     try:
@@ -89,6 +93,8 @@ async def run_attempt(sched: JobScheduler, run: Run, a: Attempt) -> None:
         spec = plans.task_spec(run.kind, task["type"], task["emotion"], sheet_job=run.sheet,
                                prices=rt.prices.generation, timing=sched.timing, song_paid=sched.song_paid())
         a.expected_ms = expected_ms(sched, spec, task["type"])
+        if run.cancelled:
+            return   # cancelled between its start and now: nothing was sent
         if a.fault:
             await rt.clock.sleep(0.6 * a.expected_ms / 1000)
             raise Fault()
@@ -106,6 +112,8 @@ async def run_attempt(sched: JobScheduler, run: Run, a: Attempt) -> None:
         await fail(sched, run, a.task_id, "provider_error", plans_message(kind), True)
     except Refused as e:
         await fail(sched, run, a.task_id, "content_refused", str(e), False)
+    except Unsent:
+        return
     except ProviderError as e:
         await fail(sched, run, a.task_id, e.code, e.message, DEFAULT_RETRYABLE.get(e.code, True))
     except (ImageRejected, TooLarge) as e:
@@ -162,6 +170,13 @@ def hooks_for(sched: JobScheduler, run: Run, a: Attempt, task: Mapping[str, Any]
 
         async def mark() -> None:
             async with rt.db.write() as tx:
+                # Pass 2 J5-01: "sent" is decided here, in the writer. A cancel that committed first (it can land while
+                # the runner's start transaction is open, before this attempt is known to it) skipped the task: the
+                # call never goes out, so it is never billed for a result nobody keeps.
+                status = (await tx.conn.execute(select(T.status).where(T.id == task["id"]))).scalar()
+                job = (await tx.conn.execute(select(J.status).where(J.id == task["job_id"]))).scalar()
+                if status != "running" or job not in ("queued", "running"):
+                    raise Unsent()
                 values: dict[str, Any] = {"provider_called_at": rt.now_iso(), "target_path": stem}
                 if first:
                     values["cost_usd"] = 0.0   # the attempt's cost is the sum of its calls (commit_with adds)

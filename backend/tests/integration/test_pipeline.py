@@ -51,7 +51,7 @@ async def test_refused_before_spend(api: Api) -> None:
     assert e.value.code == "daily_budget_exceeded"
     assert route.call_count == 0 and await new_rows(api) == [] and gw.book.total() == 0
     (ev,) = events
-    assert ev == {"type": "budget.reached", "scope": "daily", "spentUsd": 0.999, "capUsd": 1.0}
+    assert ev == {"type": "budget.reached", "scope": "daily", "spentUsd": 0.999, "capUsd": 1.0, "paused": True}
     api.rt.schema.check("GlobalEvent", ev)
 
 

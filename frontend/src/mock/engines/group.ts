@@ -3,7 +3,7 @@
 import type { GroupConfig } from "../../contract/types";
 import { decisionCostUsd, ROUTE_DECISION_TOKENS } from "../../domain/cost";
 import type { EngineHost } from "./host";
-import { asleepNote, enqueue, isAsleep, isCurrent, speakThen, supersede, userMessage } from "./host";
+import { asleepNote, enqueue, isAsleep, isCurrent, mutedMentions, speakThen, supersede, userMessage } from "./host";
 import { routeSystem1 } from "../system1";
 
 type Skip = { characterId: string; reason: "exhausted" | "muted" | "archived" };
@@ -72,9 +72,11 @@ function pickResponders(h: EngineHost, sid: string, text: string, mentions: stri
   return { speakers: [...forced, ...rest], forced, candidates, skipped };
 }
 
-export function send(h: EngineHost, sid: string, text: string, mentions: string[] = []): void {
+export function send(h: EngineHost, sid: string, text: string, addressed: string[] = []): void {
   const epoch = supersede(h.live(sid)); // G5: the previous message's unannounced replies never announce
   h.emit(sid, { type: "message", payload: { message: userMessage(h, sid, text) } });
+  const mentions = mutedMentions(h, sid, addressed);
+  if (addressed.length && !mentions.length) return; // J3-11: only muted characters were addressed; nobody else answers
   // M10 (doc 07 G1; group-watch D5): every mentioned character asleep → each gets the asleep note, nobody else answers
   const live = mentions.filter((m) => h.db.characters[m] && h.live(sid).state.session.participants.some((p) => p.characterId === m));
   if (live.length && live.every((m) => isAsleep(h, m))) {

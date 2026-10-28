@@ -208,7 +208,7 @@ class Gateway:
     comparison_errors: list[dict[str, Any]] = field(default_factory=list)
     # M3: the session manager's view of spend (cap pause on crossing; budget events of a session's call).
     on_spend: Callable[[CallContext, RecordResult], None] = lambda _ctx, _res: None
-    on_budget: Callable[[dict[str, Any], CallContext], None] = lambda _ev, _ctx: None
+    on_budget: Callable[[dict[str, Any], CallContext, float], None] = lambda _ev, _ctx, _est: None
     chat: ChatClient = field(init=False)
     decisions: DecisionsClient = field(init=False)
     images: ImagesClient = field(init=False)
@@ -270,7 +270,7 @@ class Gateway:
                 # preflight meets the cap and pauses as usual, so the one pause comes from a reply. M13 (memory D11):
                 # nor does a refused memory run or window-drop embedding (their contexts say so)
                 self._reached(ctx, "daily", spent, caps.daily_cap_usd,
-                              sessions=ctx.pauses_sessions and ctx.purpose not in AFTER_TURN)
+                              sessions=ctx.pauses_sessions and ctx.purpose not in AFTER_TURN, estimate=estimate)
                 raise ProviderError("daily_budget_exceeded", "Today's spending cap is reached.")
             if ctx.creation and ctx.character_id:
                 creation = await self.ledger.creation_spent(ctx.character_id)
@@ -308,17 +308,21 @@ class Gateway:
             j = self.book.job_remaining(ctx.job_id)
             self.book.reserve_job(ctx.job_id, j + moved, character_id=ctx.character_id, creation=ctx.creation)
 
-    def _reached(self, ctx: CallContext, scope: str, spent: float, cap: float, *, sessions: bool = True) -> None:
+    def _reached(self, ctx: CallContext, scope: str, spent: float, cap: float, *, sessions: bool = True,
+                 estimate: float = 0.0) -> None:
         """Publish `budget.reached`. `sessions=False` for a refused job estimate: a whole job not fitting doesn't mean a
-        small reply can't, so the live sessions are not paused for it."""
-        ev: dict[str, Any] = {"type": "budget.reached", "scope": scope, "spentUsd": round(spent, 6), "capUsd": cap}
+        small reply can't, so the live sessions are not paused for it. `paused` says whether this refusal paused the
+        live sessions, so the dialog doesn't claim a pause that didn't happen (pass 2 J1-02)."""
+        ev: dict[str, Any] = {"type": "budget.reached", "scope": scope, "spentUsd": round(spent, 6), "capUsd": cap,
+                              "paused": sessions and scope == "daily"}
         if ctx.session_id:
             ev["sessionId"] = ctx.session_id
         if ctx.job_id:
             ev["jobId"] = ctx.job_id
         self.publish(ev)
         if sessions:
-            self._notify(self.on_budget, ev, ctx)
+            self._notify(self.on_budget, ev, ctx, estimate)   # the refused call's estimate: the cap block lasts
+            #                                                   until a call that size fits again (pass 2 J1-01)
 
     @staticmethod
     def _notify(hook: Callable[..., None], *args: Any) -> None:

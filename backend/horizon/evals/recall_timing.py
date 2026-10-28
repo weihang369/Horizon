@@ -218,7 +218,7 @@ async def run(env: RunEnv, plan: Plan, res: Result) -> None:
                     if cid not in sessions:
                         sid = await open_session(env, c, str(rows[cid]["world_id"]), "one_on_one", [cid])
                         if sid is None:
-                            res.status = "failed"
+                            res.status = "incomplete" if env.refused else "failed"
                             break
                         sessions[cid] = sid
                     try:

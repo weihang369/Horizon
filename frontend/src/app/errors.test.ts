@@ -17,6 +17,12 @@ describe("reportError and the Budget reached dialog", () => {
     expect(o21()?.props).toMatchObject({ scope: "creation", spentUsd: 0.58, capUsd: 0.6 });
   });
 
+  it("keeps the stream's daily dialog, which knows whether the sessions paused (pass 2 J1-02)", () => {
+    openOverlay("O21", { scope: "daily", spentUsd: 1, capUsd: 1, paused: true, sessionId: "ses_a" });
+    reportError(new HorizonError("daily_budget_exceeded"));
+    expect(o21()?.props).toMatchObject({ scope: "daily", paused: true, sessionId: "ses_a" });
+  });
+
   it("opens it from the refusal alone, using the figures the error carries", () => {
     reportError(new HorizonError("creation_budget_exceeded", undefined, { details: { spentUsd: 0.61, capUsd: 0.6 } }));
     expect(o21()?.props).toMatchObject({ scope: "creation", spentUsd: 0.61, capUsd: 0.6 });

@@ -29,8 +29,14 @@ In a group session, `chat.send` SHALL post the user's message, then answer with:
   under `naive` and `scripted` the router's up-front picks, up to 2 responders in all; `everyone` adds every other
   eligible participant; `mentioned` adds none.
 
-Muted participants SHALL be skipped as `muted`, and exhausted unmentioned ones as `exhausted`. When every mentioned
-participant is asleep, each SHALL get the asleep note and nobody else SHALL answer, in every profile.
+Muted participants SHALL be skipped as `muted`, and exhausted unmentioned ones as `exhausted`. A muted participant SHALL
+never reply, even when mentioned: each muted mention SHALL get the note "{name} is muted." and be dropped from the mentions,
+and when every mention was muted nobody else SHALL answer. When every mentioned participant is asleep, each SHALL get the
+asleep note and nobody else SHALL answer, in every profile.
+
+#### Scenario: A muted participant is mentioned
+- **WHEN** a participant is muted and the user's message mentions only them
+- **THEN** the log gets "{name} is muted." and nobody replies
 
 #### Scenario: Auto policy with a mention
 - **WHEN** a three-person group with policy `auto` receives a message mentioning one participant

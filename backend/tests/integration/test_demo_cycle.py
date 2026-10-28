@@ -135,3 +135,17 @@ async def test_on_another_space_the_shipped_vectors_stay_out(api: Api) -> None:
     assert st["kno_vec"] == {} and st["seed_mem_vec"] == 0
     body = await api.json(f"{API}/knowledge/kno_seedAmara2")
     assert body["source"]["status"] == "keyword_only" and len(body["chunks"]) == pieces["kno_seedAmara2"]
+
+
+async def test_delete_all_stays_deleted_after_a_restart(make_api: Any, tmp_path: Any) -> None:
+    """Pass 2 J6-02 (the user's choice): the demo is imported once, into a fresh install. Deleting every world, as the
+    Delete all data dialog does, then restarting leaves it empty; Restore demo data brings it back."""
+    data = tmp_path / "wiped"
+    a: Api = await make_api(data_dir=data)
+    for w in await a.json(f"{API}/worlds"):
+        assert (await a.client.delete(f"{API}/worlds/{w['id']}")).status_code == 204
+    await a.rt.stop()
+    b: Api = await make_api(data_dir=data)
+    assert await b.json(f"{API}/worlds") == []
+    assert (await b.client.post("/api/v1/admin/reset-demo", json={"confirm": True})).status_code == 204
+    assert {w["id"] for w in await b.json(f"{API}/worlds")} == {"wld_seedMeridian", "wld_seedSunnyHollow"}

@@ -47,10 +47,11 @@ export function SessionLog({ rt, variant = "chat", className, hideThinking, empt
 
   // ↻ on the last character message (CHAT-06), 1:1 and group only.
   const regenId = useMemo(() => {
-    if (!live || rt.streamingId || (mode !== "one_on_one" && mode !== "group")) return undefined;
+    // Not while a turn is planned or waits for its first token either: a second click queued a second paid reply (J2-02).
+    if (!live || rt.streamingId || rt.thinkingId || (mode !== "one_on_one" && mode !== "group")) return undefined;
     const last = list[list.length - 1];
     return isCharacterMsg(last) && last.status !== "streaming" && !last.error ? last.id : undefined;
-  }, [live, rt.streamingId, mode, list]);
+  }, [live, rt.streamingId, rt.thinkingId, mode, list]);
 
   // Only the newest "asleep" note per character keeps its Top up · Wait actions.
   const staleNotes = useMemo(() => {
@@ -156,7 +157,7 @@ export function SessionLog({ rt, variant = "chat", className, hideThinking, empt
               variant={variant}
               selected={m.id === selectedId}
               canRegenerate={m.id === regenId}
-              chat={mode === "one_on_one" || mode === "group"}
+              chat={(mode === "one_on_one" || mode === "group") && !rt.thinkingId && !rt.streamingId}
               fresh={!!initial.current && !initial.current.has(m.id)}
               stale={staleNotes.has(m.id)}
               onOpenInsight={variant === "chat" ? openInsight : undefined}

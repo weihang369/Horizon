@@ -37,8 +37,18 @@ export function VerdictScreen({ route }: { route: Extract<Route, { name: "verdic
   const verdict = st?.verdict ?? null;
   const cols = useMemo(() => debateColumns(session?.participants ?? [], cfg), [session?.participants, cfg]);
   const panel = cfg?.format === "panel";
-  const youDecide = cfg?.verdictBy === "user" && !verdict && !panel;
+  // An ended debate (End without verdict) takes no pick: it shows NO VERDICT with the actions, as Arbiter does (J3-04).
+  const youDecide = cfg?.verdictBy === "user" && !verdict && !panel && session?.status !== "ended";
   const waiting = !verdict && !youDecide && (st?.phase === "verdict" || session?.status === "active");
+  // Leaving during deliberation stops the verdict work (the session pauses). Coming here to wait for it asks for it
+  // again: resume reruns the work (pass 2 J3-06). A cap pause stays, its own dialog says why.
+  const resumed = useRef(false);
+  const stalled = waiting && session?.status === "paused" && session.pausedReason !== "daily_budget";
+  useEffect(() => {
+    if (!stalled || resumed.current) return;
+    resumed.current = true;
+    void run(() => client.debate.resume(route.sessionId));
+  }, [stalled, route.sessionId]);
 
   if (rt.status === "error") {
     return (

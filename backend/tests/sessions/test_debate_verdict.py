@@ -379,3 +379,13 @@ async def test_a_pick_after_an_idle_release_runs_the_work_again(api: Api) -> Non
     assert v["decidedBy"] == "user" and v["strongerCase"] == "opp" and len(v["scores"]) == 8
     assert len(rubric_requests(api)) == 2                    # the first work, and its re-run after the load
     await assert_reduces(api, sid)
+
+
+
+async def test_a_pick_before_the_verdict_phase_is_refused(api: Api) -> None:
+    """Pass 2 J3-04: mid-debate a pick started a paid verdict call and was used later without asking."""
+    sid = await debate(api, profile="scripted", verdictBy="user")
+    await api.drive(2000)
+    r = await api.post(f"{API}/sessions/{sid}/debate/pick", {"side": "prop"})
+    assert r.status_code == 409, r.text
+    assert not [x for x in await ledger(api) if x["purpose"] in ("rubric", "verdict")]

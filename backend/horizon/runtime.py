@@ -78,6 +78,7 @@ from horizon.tracing import switch_on as switch_tracing_on
 
 log = logging.getLogger("horizon.runtime")
 T = TypeVar("T")
+SEEDED_MARKER = ".demo-seeded"   # in data/: the demo was imported once (pass 2 J6-02)
 
 
 class Gate:
@@ -302,8 +303,10 @@ class Runtime:
         self._key_status = status
         if became_set and self._ingest is not None and self.started:
             from horizon.services.knowledge.recovery import reembed_user_sources
+            from horizon.services.memory.index import backfill_lines
 
             self.spawn("knowledge:reembed", reembed_user_sources(self))  # D8: user sources, now that a key is set
+            self.spawn("recall:backfill", backfill_lines(self))          # pass 2 J4-02: lines left with no vector
 
     def _build_m2(self) -> None:
         cfg = self.cfg
@@ -374,10 +377,12 @@ class Runtime:
     async def _recover_m5(self) -> None:
         """M5 startup (design D2, D8): resume sources left indexing, then re-embed user sources if a key is set."""
         from horizon.services.knowledge.recovery import recover, reembed_user_sources
+        from horizon.services.memory.index import backfill_lines
 
         self._key_status = self.keys.status()
         await recover(self)
         await reembed_user_sources(self)
+        self.spawn("recall:backfill", backfill_lines(self))   # pass 2 J4-02: in the background, not before serving
 
     def _build_m5(self) -> None:
         from horizon.services.knowledge.worker import IngestionWorker
@@ -487,9 +492,16 @@ class Runtime:
                         "using %s", configured, space.id, space.model, space.model)
         async with self.db.read() as conn:
             empty = not await seeding.has_worlds(conn)
-        if empty:
+        # Pass 2 J6-02 (the user's choice): the demo is imported once, into a fresh install. After that an empty
+        # database is the user's doing (Delete all data) and stays empty; Restore demo data is the way back. A factory
+        # reset wipes the marker with `data/`, so it starts fresh. An install from before the marker that has a world
+        # counts as seeded.
+        marker = cfg.data_dir / SEEDED_MARKER
+        if empty and not marker.exists():
             await self.import_seed()
+        marker.touch()
         await self.close_interrupted_streams()
+        await self.pause_playing_watches()
         self.clear_scenario_state()
         self._build_m2()
         self._build_m3()  # step 7 (drain ai_purge_queue) starts with the purge worker
@@ -499,6 +511,7 @@ class Runtime:
             await self.jobs.recover()  # step 6, before the first request is served
             await self._recover_m5()
             self.memory_runs.start()          # M13 (memory D7): the stream-left grace and the triggers
+            self.sessions.watch_streams()     # pass 2 J3-07: a watch or debate nobody watches pauses
             await self.memory_runs.sweep()    # trigger 6: after close_interrupted_streams
             await self.corrector.scan()
         await asyncio.to_thread(sweep, cfg.data_dir, self.referenced_files_sync())
@@ -641,6 +654,39 @@ class Runtime:
         for sid in open_sessions:
             async with self.db.write() as tx:
                 await self._close_streams(tx.conn, sid, tx.publish)
+
+    async def pause_playing_watches(self) -> None:
+        """Pass 2 J3-03: a watch's chain of turns lives in its actor's pace timer, which a restart loses. A scene left
+        playing is paused (as leaving it does), so it shows Play instead of "On air" with no turn ever coming."""
+        async with self.db.read() as conn:
+            rows = (await conn.execute(select(t.sessions.c.id, t.sessions.c.state).where(
+                t.sessions.c.mode == "watch", t.sessions.c.status == "active"))).all()
+        for sid, st in rows:
+            st = json.loads(st) if isinstance(st, str) else (st or {})
+            if st.get("status") != "playing":
+                continue
+            async with self.db.write() as tx:
+                conn = tx.conn
+                srow = (await conn.execute(select(t.sessions).where(t.sessions.c.id == sid))).mappings().one()
+                parts = (await conn.execute(select(t.participants).where(t.participants.c.session_id == sid))).mappings().all()
+                last_seq = (await conn.execute(text("SELECT COALESCE(MAX(seq), 0) FROM session_events WHERE session_id = :s"),
+                                               {"s": sid})).scalar_one()
+                state = initial_runtime(mp.session_wire(srow, parts), [])
+                watch = {**st, "status": "paused"}
+                cfg = state["session"].get("config") or {}
+                for typ, payload in (("watch.state", {"status": "paused", "paceMs": cfg.get("paceMs", 1500),
+                                                      "turnsTaken": watch["turnsTaken"], "turnLimit": watch["turnLimit"]}),
+                                     ("session.state", {"state": watch}),
+                                     ("session.paused", {"reason": "navigated_away"})):
+                    last_seq += 1
+                    evt = {"id": new_id("evt"), "sessionId": sid, "seq": last_seq, "at": self.now_iso(), "type": typ,
+                           "payload": payload}
+                    state = apply_event(state, evt)
+                    await conn.execute(t.session_events.insert().values(**mp.event_row(evt)))
+                    tx.publish(session_channel(sid), evt)
+                srow2, _ = mp.session_rows(state["session"], is_seed=bool(srow["is_seed"]))
+                await conn.execute(t.sessions.update().where(t.sessions.c.id == sid).values(
+                    **{k: v for k, v in srow2.items() if k not in ("id", "is_seed")}))
 
     async def _close_streams(self, conn: Any, sid: str, publish: Any) -> None:
         srow = (await conn.execute(select(t.sessions).where(t.sessions.c.id == sid))).mappings().one()

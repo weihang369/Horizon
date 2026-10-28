@@ -52,10 +52,14 @@ async def _stop(a: SessionActor, _b: Wire) -> None:
 async def _regenerate(a: SessionActor, b: Wire) -> None:
     mid = str(b["messageId"])
     m = a.state["messages"].get(mid)
-    if m is None or m["author"]["type"] != "character" or m["status"] == "streaming":
+    if m is None or m["author"]["type"] != "character":
         raise not_found("Message")
+    if m["status"] == "streaming":   # pass 2 J2-05: it exists; it just isn't finished (the mock says the same)
+        raise conflict("A reply is still streaming.")
     if a.mode_name not in ("one_on_one", "group"):   # a debate argument or a scene line would come back as a chat reply
         raise conflict("Regenerate is only for 1:1 and group chat.")
+    if mid in a.mode.regenerating:   # pass 2 J2-02: a second click during the plan would queue a second paid reply
+        raise conflict("This reply is already being regenerated.")
     one_on_one.regenerate(a, mid)
 
 
