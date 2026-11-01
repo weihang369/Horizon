@@ -10,8 +10,12 @@ import type { OverlayComponentProps } from "../../app/overlayTypes";
 import { getRoute, navigate, useRoute } from "../../router";
 import { formatRoute } from "../../router/routes";
 import s from "./DemoTape.module.css";
+import { NO_BACKEND, ONLINE_DEMO_NOTICE } from "./onlineDemo";
 
-export const DEMO_COPY = "DEMO MODE · Browsing seed data · Add your OpenRouter key to chat & create";
+// The online demo (mock build) never takes a key, so its tape points at running Horizon locally instead (2026-10-20).
+export const DEMO_COPY = NO_BACKEND
+  ? "DEMO MODE · Online demo · Everything here was recorded"
+  : "DEMO MODE · Browsing seed data · Add your OpenRouter key to chat & create";
 
 export function DemoTape(_: Partial<OverlayComponentProps<"O22">>) {
   const route = useRoute();
@@ -33,13 +37,17 @@ export function DemoTape(_: Partial<OverlayComponentProps<"O22">>) {
       <span className={s.strip} aria-hidden="true">
         <span className={s.demo}>DEMO MODE</span>
         <span className={s.cta}>
-          <span className={s.ctaSeed}>SEED DATA ·</span> ⚿ ADD KEY <b>▸</b>
+          {NO_BACKEND
+            ? <><span className={s.ctaSeed}>RECORDED ·</span> RUN LOCALLY <b>▸</b></>
+            : <><span className={s.ctaSeed}>SEED DATA ·</span> ⚿ ADD KEY <b>▸</b></>}
         </span>
       </span>
       <span className={s.fly} aria-hidden="true">
         <span className={s.flyTitle}>DEMO MODE</span>
-        <span className={s.flyText}>Browsing seed data. Every recording plays; add your OpenRouter key to chat &amp; create.</span>
-        <span className={s.flyCta}>Add key ▸</span>
+        <span className={s.flyText}>
+          {NO_BACKEND ? ONLINE_DEMO_NOTICE : <>Browsing seed data. Every recording plays; add your OpenRouter key to chat &amp; create.</>}
+        </span>
+        <span className={s.flyCta}>{NO_BACKEND ? "How to run it ▸" : "Add key ▸"}</span>
       </span>
     </button>
   );

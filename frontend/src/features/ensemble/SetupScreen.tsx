@@ -50,7 +50,8 @@ export function SetupScreen({ route }: { route: SetupRoute }) {
   const roster = useMemo(() => (charsQ.data ?? []).filter((c) => c.status === "approved"), [charsQ.data]);
   const mode = route.mode;
   const step: Step = !mode ? "mode" : route.step === "config" && (route.cast?.length ?? 0) >= 2 ? "config" : route.step === "mode" ? "mode" : route.step ?? "cast";
-  const cast = useMemo(() => (route.cast ?? []).filter((id) => roster.some((c) => c.id === id) || !charsQ.data), [route.cast, roster, charsQ.data]);
+  // A hand-edited or shared link can name someone twice (J3-05): each character is in the cast once.
+  const cast = useMemo(() => [...new Set(route.cast ?? [])].filter((id) => roster.some((c) => c.id === id) || !charsQ.data), [route.cast, roster, charsQ.data]);
   const byId = useMemo(() => Object.fromEntries(roster.map((c) => [c.id, c])), [roster]);
 
   const go = (patch: Partial<SetupRoute>, replace = false) =>
@@ -74,7 +75,9 @@ export function SetupScreen({ route }: { route: SetupRoute }) {
   const [premise, setPremise] = useState("");
   const [length, setLength] = useState<WatchConfig["maxTurns"]>(20);
   const [pace, setPace] = useState<WatchConfig["paceMs"]>(1500);
-  const [opener, setOpener] = useState<string>("auto");
+  const [openerPick, setOpener] = useState<string>("auto");
+  // Someone dropped from the cast can't open the scene: it falls back to Auto, on screen and in the config (J3-09)
+  const opener = openerPick === "auto" || cast.includes(openerPick) ? openerPick : "auto";
   const [advanced, setAdvanced] = useState((route.cast?.length ?? 0) >= 5);
   const [starting, setStarting] = useState(false);
 
@@ -298,7 +301,7 @@ export function SetupScreen({ route }: { route: SetupRoute }) {
                   </Row>
                   <Row label="Pace">
                     <Segmented label="Pace" value={String(pace)} onChange={(v) => setPace(Number(v) as WatchConfig["paceMs"])} options={PACE_OPTIONS.map((o) => ({ value: o.value, label: o.label }))} />
-                    <span className={s.note}>{pace === 3000 ? "3 s" : pace === 1500 ? "1.5 s" : "0.5 s"} between turns</span>
+                    <span className={s.note}>About {pace === 3000 ? "3.4 s" : pace === 1500 ? "1.9 s" : "0.9 s"} between lines</span>
                   </Row>
                   <Row label="Opening speaker">
                     <Select label="Opening speaker" hideLabel value={opener} onChange={setOpener} options={[{ value: "auto", label: "Auto" }, ...cast.map((id) => ({ value: id, label: byId[id]?.profile.name ?? id }))]} />

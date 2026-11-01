@@ -33,7 +33,9 @@ client.onGlobal((e) => {
     case "settings": return invalidate((k) => k === resKeys.settings);
     case "world": return invalidate((k) => k === resKeys.worlds || (!!id && k === resKeys.world(id)));
     case "character": return invalidate((k) => (!!id && (k === resKeys.character(id) || k === resKeys.song(id))) || (worldId ? k.startsWith(`characters:${worldId}:`) : k.startsWith("characters:")) || k === resKeys.worlds || (!!worldId && k === resKeys.world(worldId)));
-    case "session": return invalidate((k) => (worldId ? k === resKeys.sessions(worldId) : k.startsWith("sessions:")));
+    // A session's delete or fork changes the memories that link to it ("View source") and the knowledge tab's
+    // "Cited N×" too (pass 2 J4-03), so those re-read as well.
+    case "session": return invalidate((k) => (worldId ? k === resKeys.sessions(worldId) : k.startsWith("sessions:")) || k.startsWith("memory:") || k.startsWith("knowledge:"));
     case "usage": return invalidate((k) => k === resKeys.usage || k === resKeys.usageSummary || k === resKeys.settings);
     case "memory": return invalidate((k) => k.startsWith("memory:"));
     case "knowledge": return invalidate((k) => k.startsWith("knowledge:"));

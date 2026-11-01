@@ -101,6 +101,42 @@ async def embed_lines(rt: Runtime, session_id: str, world_id: str, lines: Sequen
         return await write_vectors(tx.conn, table, session_id, [r for r, _ in lines], list(got.vectors))
 
 
+BACKFILL_MAX = 2000   # lines per pass: a few cents at most; the next start or key save goes on
+BACKFILL_BATCH = 64
+
+
+async def backfill_lines(rt: Runtime) -> int:
+    """Pass 2 J4-02 (the user's choice): lines that left the window with no key, a failed embedding, or a restart
+    between the row and its vector had no vector for good, and recall searches lines by vector alone once the query
+    has one, so they were never found. At start-up and when a key is saved, embed them (active space, batches per
+    session, oldest first); a failure stops the pass, and the next trigger tries again. Returns the lines embedded."""
+    if rt.keys.status() != "set":
+        return 0
+    async with rt.db.read() as conn:
+        space = await spaces.active(conn)
+        table = spaces.message_vec_table(space.id)
+        have = set((await conn.execute(text(f"SELECT rid FROM {table}"))).scalars())
+        missing = [int(r) for r in (await conn.execute(select(X.rid).order_by(X.rid))).scalars() if r not in have]
+    done = 0
+    missing = missing[:BACKFILL_MAX]   # the cap counts lines, not batch starts (a last batch ran 48 over)
+    for i in range(0, len(missing), BACKFILL_BATCH):
+        async with rt.db.read() as conn:
+            rows = (await conn.execute(select(X.rid, X.session_id, t.sessions.c.world_id, X.text)
+                                       .join(t.sessions, t.sessions.c.id == X.session_id)
+                                       .where(X.rid.in_(missing[i:i + BACKFILL_BATCH])))).all()
+        by_session: dict[tuple[str, str], list[tuple[int, str]]] = {}
+        for rid, sid, wid, body in rows:
+            by_session.setdefault((str(sid), str(wid)), []).append((int(rid), str(body)))
+        for (sid, wid), lines in by_session.items():
+            n = await embed_lines(rt, sid, wid, lines)
+            if not n:
+                return done
+            done += n
+    if done:
+        log.info("embedded %d indexed line(s) that had no vector", done)
+    return done
+
+
 async def write_vectors(conn: AsyncConnection, table: str, session_id: str, rids: Sequence[int],
                         vectors: Sequence[Sequence[float]]) -> int:
     if not rids:
@@ -131,7 +167,8 @@ async def zero_vectors(conn: AsyncConnection, rids: Sequence[int]) -> None:
 # ── following their messages (D29) ──
 async def follow_regenerate(rt: Runtime, session_id: str, world_id: str, message_id: str, content: str) -> None:
     """The new active variant's text replaces the row's (FTS by trigger, the speaker's label kept), and its vector is
-    embedded again. A message that was never indexed has nothing to follow."""
+    embedded again. The old variant's vectors go first, so with no key or a failed embedding the line is keyword-only
+    rather than found by the old text's meaning. A message that was never indexed has nothing to follow."""
     async with rt.db.write() as tx:
         row = (await tx.conn.execute(select(X.rid, X.text).where(X.message_id == message_id))).first()
         if row is None:
@@ -139,6 +176,8 @@ async def follow_regenerate(rt: Runtime, session_id: str, world_id: str, message
         rid = int(row[0])
         body = line_text(str(row[1]).split(": ", 1)[0], content)
         await tx.conn.execute(t.message_index.update().where(X.rid == rid).values(text=body))
+        for space in await spaces.non_retired(tx.conn):
+            await tx.conn.execute(text(f"DELETE FROM {spaces.message_vec_table(space.id)} WHERE rid = :r"), {"r": rid})
     await embed_lines(rt, session_id, world_id, [(int(rid), body)])
 
 

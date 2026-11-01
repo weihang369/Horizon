@@ -143,13 +143,15 @@ class Comparison:
         self.path = state_path(self.data_dir, self.base, self.new)
         self.state = load_state(self.path, self.base, self.new, self.manifest)
 
-    def _done(self, run_id: str | None) -> bool:
-        return bool(run_id) and run_meta(self.data_dir, str(run_id)).get("status") in ("ok", "drift")
+    def _done(self, run_id: str | None, *, drift_done: bool = True) -> bool:
+        return bool(run_id) and run_meta(self.data_dir, str(run_id)).get("status") in (
+            ("ok", "drift") if drift_done else ("ok",))
 
     async def _run(self, key: str, opts: Options, *, prices: Any) -> tuple[int, str | None]:
-        """One runner run, recorded under `key`; skipped when its recorded run finished."""
+        """One runner run, recorded under `key`; skipped when its recorded run finished. A drifted base canary is
+        never "finished": the comparison stopped on it, so once the user has dealt with the drift it runs again."""
         runs = self.state["runs"]
-        if self._done(runs.get(key)):
+        if self._done(runs.get(key), drift_done=key != "canary:base"):
             self.out(f"{key}: done ({runs[key]}), skipped")
             return 0, runs[key]
         r = self.runner_for()

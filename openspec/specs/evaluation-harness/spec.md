@@ -205,7 +205,7 @@ The `summary` suite SHALL summarise 40 committed dropped-history inputs (English
 - **THEN** the report prints that summary, its lines and the judge's p
 
 ### Requirement: Long suite
-The `long` suite (`agent` only, rare, not part of `all`) SHALL run three scripted conversations (1:1 English, 1:1 Malay, group) to two drops plus 20 turns, with facts planted in turns 3–10 and 5 probes in the last 20. It SHALL report recall with its interval, the voice-drift signal, the provider cache-hit % on turns that are neither a session's first nor a drop, summary calls and cost per 100 turns, the reply checks and the repetition rates.
+The `long` suite (`agent` only, rare; `horizon eval all` only probes it, never runs it) SHALL run three scripted conversations (1:1 English, 1:1 Malay, group) to two drops plus 20 turns, with facts planted in turns 3–10 and 5 probes in the last 20. It SHALL report recall with its interval, the voice-drift signal, the provider cache-hit % on turns that are neither a session's first nor a drop, summary calls and cost per 100 turns, the reply checks and the repetition rates.
 
 #### Scenario: Cache-hit % ignores store hits
 - **WHEN** a long run is repeated and every reply is served from the response store

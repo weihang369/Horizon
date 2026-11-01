@@ -124,6 +124,15 @@ def multipart(name: str, payload: bytes) -> bytes:
     return head + payload + f"\r\n--{BOUNDARY}--\r\n".encode()
 
 
+async def test_a_browser_escaped_quote_in_the_file_name_is_undone(api: Api) -> None:
+    """Pass 2 J4-07: a browser sends `My "notes".txt` as `filename="My %22notes%22.txt"`; the title keeps the quotes,
+    as on the mock."""
+    r = await api.client.post(f"{API}/characters/{HANA}/knowledge", content=multipart("My %22notes%22.txt", b"Miso first."),
+                              headers={"content-type": f"multipart/form-data; boundary={BOUNDARY}"})
+    assert r.status_code == 201, r.text
+    assert r.json()["title"] == 'My "notes".txt'
+
+
 async def test_chunked_oversize_upload_is_413(api: Api) -> None:
     body = multipart("huge.txt", b"a" * (11 * 1024 * 1024))
 

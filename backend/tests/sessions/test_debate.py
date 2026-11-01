@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from tests.conftest import Api
-from tests.sessions.kit import assert_reduces, chars, command, create, events, ledger, messages, snapshot
+from tests.sessions.kit import API, assert_reduces, chars, command, create, events, ledger, messages, snapshot
 
 PAIR = ["chr_seedAmara", "chr_seedVictor"]
 
@@ -18,6 +18,15 @@ async def _debate(api: Api, **cfg: Any) -> str:
               "rubric": [], "autoAdvance": True, "pauseMs": 1500, **cfg}
     sid: str = (await create(api, "debate", PAIR, config=config))["session"]["id"]
     return sid
+
+
+async def test_an_argument_is_never_regenerated_as_a_chat_reply(api: Api) -> None:
+    """Regenerate is a 1:1 and group command: on a debate argument it would come back as a chat reply (audit B-C01)."""
+    sid = await _debate(api, autoAdvance=False)
+    await api.drive(20000)
+    first = chars(await messages(api, sid))[0]
+    r = await api.post(f"{API}/sessions/{sid}/regenerate", {"messageId": first["id"]})
+    assert r.status_code == 409 and "1:1 and group" in r.text
 
 
 async def test_quick_debate_to_a_verdict(api: Api) -> None:
@@ -149,3 +158,65 @@ async def test_end_with_and_without_a_verdict(api: Api) -> None:
     await api.drive(20000)
     v = (await snapshot(api, other))["session"]["state"]["verdict"]
     assert v["decidedBy"] in ("none", "arbiter") and v["strongerCase"] is None
+
+
+def _waits(evs: list[dict[str, Any]]) -> list[float]:
+    """From each argument's `turn.end` to the next argument's `turn.thinking`."""
+    from horizon.domain.timeutil import ms_from_iso
+
+    out, end = [], None
+    for e in evs:
+        if e["type"] == "turn.end":
+            end = ms_from_iso(e["at"])
+        elif e["type"] == "turn.thinking" and end is not None:
+            out.append(ms_from_iso(e["at"]) - end)
+            end = None
+    return out
+
+
+async def _first_end(api: Api, sid: str) -> None:
+    while not any(e["type"] == "turn.end" for e in await events(api, sid)):
+        await api.drive(100)
+
+
+async def test_auto_advance_off_and_on_in_the_pause_keeps_one_chain(api: Api) -> None:
+    """Audit D-02: turning auto-advance off and on while the pause's timer waits (O12 Ask…/Interject opened and closed)
+    must not start a second chain: the timer still runs the next step, and no argument follows another at once."""
+    sid = await _debate(api, phases=["opening", "rebuttal", "closing"], pauseMs=3000)
+    await _first_end(api, sid)
+    await api.drive(1000)
+    await command(api, sid, "debate/auto-advance", {"on": False})
+    await command(api, sid, "debate/auto-advance", {"on": True})
+    await api.drive(120000)
+    snap = await snapshot(api, sid)
+    assert len(chars(snap["messages"])) == 6 and snap["session"]["status"] == "ended"
+    waits = _waits(await events(api, sid))
+    assert waits and min(waits) >= 3000, waits
+
+
+async def test_pause_and_resume_in_the_pause_keeps_one_chain(api: Api) -> None:
+    """Audit D-02: Pause then Play while the pause's timer waits adds no second chain."""
+    sid = await _debate(api, phases=["opening", "rebuttal", "closing"], pauseMs=3000)
+    await _first_end(api, sid)
+    await api.drive(1000)
+    await command(api, sid, "debate/pause")
+    await command(api, sid, "debate/resume")
+    await api.drive(120000)
+    waits = _waits(await events(api, sid))
+    assert len(chars(await messages(api, sid))) == 6 and min(waits) >= 3000, waits
+
+
+async def test_ask_with_auto_advance_held_then_restored_goes_on(api: Api) -> None:
+    """Audit D-02: O12 Ask… turns auto-advance off while open and back on when it closes, right after the Ask is sent.
+    The answer streams, and the debate then goes on by itself (it used to stall: nothing scheduled the next step)."""
+    sid = await _debate(api, phases=["opening", "rebuttal", "closing"], pauseMs=1500)
+    await command(api, sid, "debate/auto-advance", {"on": False})
+    await _first_end(api, sid)
+    await api.drive(10000)   # the hold: the slot ended with auto-advance off, nothing is scheduled
+    await command(api, sid, "debate/ask", {"characterId": "chr_seedVictor", "text": "Why sugar and not salt?"})
+    await api.drive(50)   # the answer job has started
+    await command(api, sid, "debate/auto-advance", {"on": True})
+    await api.drive(120000)
+    snap = await snapshot(api, sid)
+    assert len([m for m in chars(snap["messages"]) if m.get("forcedSpeaker")]) == 1
+    assert snap["session"]["status"] == "ended" and len(chars(snap["messages"])) == 7

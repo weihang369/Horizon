@@ -4,6 +4,7 @@ import { client } from "../../client";
 import type { HorizonErrorShape } from "../../contract/errors";
 import type { Session } from "../../contract/types";
 import { navigate } from "../../router";
+import { NO_BACKEND } from "../shell/onlineDemo";
 import { resumeRoute } from "./hubLogic";
 
 const msg = (e: unknown, fallback: string) => (e as HorizonErrorShape)?.message ?? fallback;
@@ -67,7 +68,7 @@ export function deleteSession(s: Session): void {
   openOverlay("O03", {
     title: `Delete “${s.title}”?`,
     body: s.isSeed
-      ? "This removes the recording from this browser. “Reset demo data” in Settings → Data brings it back."
+      ? `This removes the recording${NO_BACKEND ? " from this browser" : ""}. “Reset demo data” in Settings → Data brings it back.`
       : `${s.messageCount} message${s.messageCount === 1 ? "" : "s"} will be deleted. Characters keep their memories.`,
     confirmLabel: "Delete session",
     onConfirm: async () => {

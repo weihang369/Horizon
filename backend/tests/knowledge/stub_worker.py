@@ -2,7 +2,8 @@
 
 Modes: `ok` (two pages with markers), `sleep` (hangs), `crash` (exits 1 with no result), `page_limit`, `garbage`,
 `progress` (three progress lines 0.4 s apart, then two pages: slower than a 1 s idle limit in all, never idle that
-long) and `stall` (one progress line, then hangs).
+long), `stall` (one progress line, then hangs) and `part` (dies mid-write, leaving `OUT.part` as a killed Docling
+worker would).
 It writes its own PID to PIDFILE first, so a test can check the process is gone afterwards.
 """
 
@@ -29,6 +30,10 @@ if mode == "ok":
 elif mode == "sleep":
     time.sleep(120)
 elif mode == "crash":
+    sys.exit(1)
+elif mode == "part":
+    with open(out + ".part", "w", encoding="utf-8") as f:
+        f.write("<!-- page 1 -->" + chr(10) + "Half")
     sys.exit(1)
 elif mode == "page_limit":
     print(json.dumps({"ok": False, "reason": "page_limit", "error": "This document has 412 pages; the limit is 300."}))

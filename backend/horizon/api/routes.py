@@ -207,10 +207,19 @@ async def delete_world(request: Request, world_id: str) -> Response:
     async with rt.db.read() as conn:
         cids = [str(r[0]) for r in await conn.execute(text("SELECT id FROM characters WHERE world_id = :w"),
                                                       {"w": world_id})]
+        sids = [str(r[0]) for r in await conn.execute(text("SELECT id FROM sessions WHERE world_id = :w"),
+                                                      {"w": world_id})]
+    # Pass 2 J6-01: its live sessions stop first, as a session delete does. A turn left running wrote into rows that
+    # were gone, never closed, and kept its session "generating": every new session got 409 until a restart.
+    for sid in sids:
+        actor = rt.sessions.peek(sid)
+        if actor is not None:
+            await rt.sessions.release(sid, actor)
     for cid in cids:
         await rt.jobs.cancel_for_character(cid)
     await rt.ingest.cancel_for(world_id=world_id)  # M5 design D18: indexing stops before its rows go
     rt.memory_runs.cancel(world=world_id)   # M13 (memory D8)
+    await rt.gateway.drain_background()   # a stopped reply's shielded ledger row lands before its session goes
     async with rt.db.write() as tx:
         await worlds_svc.delete_world(tx, world_id, now=rt.now_iso())
     worlds_svc.remove_world_files(rt.cfg.data_dir, world_id)

@@ -236,6 +236,9 @@ context limit.
 **Decision:**
 - **Rendering on the `agent` path:** the speaker's own lines are `assistant` messages; everyone else's are `user`
   messages as `Name: text`; system notes, narration and directions stay `[kind] text`.
+  Notes about the app rather than the scene ("X is muted.", "Top someone up…", "End the debate to finish.", a
+  recap or verdict that failed) are left out of every prompt and summary (v1.1, `context.app_note`): a character
+  once read "Takeshi is muted." and said "dad's muted" in the scene. Story notes ("X is asleep", "X has left.") stay.
   **Consecutive messages with the same role are merged into one.** In a merged `user` message **every line carries
   its speaker's name**: a reply shown as several bubbles (doc 03 C5) becomes several `Name: line` lines, so no line is
   left unattributed. Own lines (`assistant`) carry no name, which matches doc 04 P6's name stripping. A fixture test
@@ -303,7 +306,7 @@ already exist.
 | `system` | the world block and the reply rules (blocks 2 and 4) |
 | `mode` | the session block (block 3) plus the tail's mood line, cue, and any repeat hint or voice reminder |
 | `history` | the summary plus the history window, **without** the latest user message |
-| `user` | the latest user message (0 when the turn has none, as in watch) |
+| `user` | the latest user message (0 when the turn has none; in watch and debate a turn has one only when the line just before it is the user's: a Step-in, an Ask, a note) |
 | `memory` | the memory list in system message 1 (doc 09 M8), plus any older memories the search added (M9) |
 | `knowledge` | the passages in the retrieval block |
 | `budget` | the mode's planned input (X1) |

@@ -1,7 +1,8 @@
 """Watch (session-modes "Watch pacing and the turn cap", "Watch controls"; a port of `mock/engines/watch.ts`).
 
-The premise is posted as a `direction` message; speakers take turns round-robin from the opening speaker, `paceMs` of
-clock time apart. Each turn raises `turnsTaken` (`watch.state` + `session.state`); reaching `turnLimit` pauses with
+The premise is posted as a `direction` message. Under `agent` the next speaker is planned (`watch_plan`: a nudge, the
+guard, else Jev); `naive` and `scripted` go round-robin from the opening speaker. The next turn starts the turn gap
+plus `paceMs` after the stream ends. Each turn raises `turnsTaken` (`watch.state` + `session.state`); reaching `turnLimit` pauses with
 `turn_cap`. A director's note colours the next 2 turns; Step in pauses and lets up to 2 characters reply.
 """
 
@@ -95,6 +96,21 @@ async def pick_speaker(actor: SessionActor) -> str | None:
     return None
 
 
+async def drop_dead_nudge(actor: SessionActor) -> None:
+    """Pass 2 J3-02: a Speak next for someone who can't speak (asleep, muted or gone) is dropped, with the asleep note
+    for a sleeper, and the scene picks as usual. Before, the turn ran for them, did nothing, and the chain stopped."""
+    cid = actor.mode.nudge
+    if not cid:
+        return
+    part = next((p for p in actor.session["participants"] if p["characterId"] == cid), None)
+    asleep = part is not None and await is_asleep(actor, cid)
+    if part is not None and not part.get("mutedByUser") and not asleep:
+        return
+    actor.mode.nudge = None
+    if asleep:
+        await asleep_note(actor, cid, skipping=True)
+
+
 def turn(actor: SessionActor, manual: bool = False) -> None:
     """One scene turn. `manual` (Step) runs while paused and doesn't chain."""
     async def job() -> None:
@@ -105,6 +121,7 @@ def turn(actor: SessionActor, manual: bool = False) -> None:
             await actor.emit(*watch_state(actor, {"status": "ended", "nextSpeakerId": None}),
                              {"type": "session.paused", "payload": {"reason": "turn_cap"}})
             return
+        await drop_dead_nudge(actor)
         planned = plans_cast(actor)
         plan: CastPlan | None = None
         pick: ScenePick | None = None
@@ -142,6 +159,12 @@ def turn(actor: SessionActor, manual: bool = False) -> None:
             elif deep is not None:
                 deep.cancel()
         out = await runner(actor).run(actor, spec)
+        if out.status in ("asleep", "missing", "blocked"):
+            # Pass 2 J3-02: the speaker couldn't speak after all (asleep or gone by now). The scene goes on with the
+            # next one at the usual pace instead of stopping while it still shows "On air".
+            if not manual and not actor.held:
+                actor.after(float(cfg_of(actor).get("paceMs", 1500)), lambda: turn(actor))
+            return
         if out.status not in ("complete", "interrupted", "error"):
             return
         taken = int(state_of(actor)["turnsTaken"]) + 1
@@ -164,11 +187,24 @@ def turn(actor: SessionActor, manual: bool = False) -> None:
     actor.enqueue(job)
 
 
+def kick(actor: SessionActor) -> None:
+    """Start the chain of turns unless one is alive. A job that runs once the queue is empty: a turn job has then set
+    its pace timer (the chain goes on by itself), a Step in reply has not (the chain starts here). Play while the pace
+    timer still waits must not add a second chain (audit D-C01)."""
+    async def job() -> None:
+        if len(actor.turns):   # other work first (a turn there sets its own pace timer); then look again
+            actor.enqueue(job)
+            return
+        if not actor._timers:   # the pace timer is the only `after` a watch sets
+            turn(actor)
+
+    actor.enqueue(job)
+
+
 async def play(actor: SessionActor) -> None:
     actor.held = False
     await actor.emit(*watch_state(actor, {"status": "playing"}), {"type": "session.resumed", "payload": {"reason": "user"}})
-    if not actor.busy and len(actor.turns) == 0:
-        turn(actor)
+    kick(actor)
 
 
 async def pause(actor: SessionActor) -> None:
@@ -219,7 +255,7 @@ async def step_in(actor: SessionActor, text: str) -> None:
     """Step in: pause, post the user's line, then answer it. Under a planner that plans the cast (D11): `who_first`
     over the awake, unmuted cast and every face in one call, then the follow plan for an optional second reply.
     Otherwise up to 2 random characters (G13). A Step in supersedes earlier unannounced replies (G5)."""
-    if not actor.held:
+    if not actor.held and state_of(actor).get("status") != "ended":   # at the turn cap the episode stays ended (D-08)
         await pause(actor)
     epoch = await actor.supersede()
     await actor.emit(message_event(user_message(actor, text)))
@@ -268,7 +304,7 @@ async def extend(actor: SessionActor, turns: int = 10) -> None:
     taken = min(int(st["turnsTaken"]), int(st["turnLimit"]))
     await actor.emit(*watch_state(actor, {"turnLimit": taken + turns, "status": "playing"}),
                      {"type": "session.resumed", "payload": {"reason": "extend"}})
-    turn(actor)
+    kick(actor)
 
 
 async def summarise(actor: SessionActor) -> None:

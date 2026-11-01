@@ -14,6 +14,7 @@ from tests.sessions.kit import API, assert_reduces, chars, command, create, even
 
 AMARA, MEI, VICTOR = "chr_seedAmara", "chr_seedMei", "chr_seedVictor"
 TWO_V_ONE = {"format": "two_sided", "sides": {"prop": [AMARA, MEI], "opp": [VICTOR]}}
+CLOSING = {"phase": "closing", "round": 2, "iteration": 1}
 
 
 # ── pure rules ──
@@ -50,11 +51,27 @@ def test_the_cursor_counts_arguments_and_skips_since_the_banner() -> None:
 def test_missed_turns_by_side_and_reason() -> None:
     log = [_m(1, "system", "system_note", "ROUND 1 · OPENING"), _m(2, AMARA), _m(3, VICTOR), _m(4, MEI),
            _m(5, "system", "system_note", "ROUND 2 · CLOSING"), _m(6, AMARA),
-           _m(7, "system", "system_note", "Victor is asleep (⚡ 0).", targetCharacterId=VICTOR)]
+           _m(7, "system", "system_note", "Victor is asleep (⚡ 0).", targetCharacterId=VICTOR, debate=CLOSING)]
     missed = missed_turns(log, TWO_V_ONE, [AMARA, MEI, VICTOR])
     assert missed == {"prop": {"missed": 1, "reason": "the debate ended early"}, "opp": {"missed": 1, "reason": "asleep"}}
     assert missed_sentence(missed) == ("Proposition: 1 turn missed, the debate ended early; "
                                        "Opposition: 1 turn missed, everyone on that side was asleep")
+
+
+def test_missed_turns_reason_is_per_phase_and_ignores_an_ask() -> None:
+    """Audit D-07: an asleep note from an Ask (no phase tag, no slot) is no reason, and a skip in the opening doesn't
+    explain the turns missed when the debate ended early later."""
+    asked = [_m(1, "system", "system_note", "ROUND 1 · OPENING"), _m(2, AMARA), _m(3, VICTOR),
+             _m(4, "user", "steer", "Victor?"), _m(5, "system", "system_note", "Victor is asleep (⚡ 0).",
+                                                   targetCharacterId=VICTOR)]
+    assert missed_turns(asked, TWO_V_ONE, [AMARA, MEI, VICTOR]) == {
+        "prop": {"missed": 1, "reason": "the debate ended early"}}
+    opening = {"phase": "opening", "round": 1, "iteration": 1}
+    skipped = [_m(1, "system", "system_note", "ROUND 1 · OPENING"), _m(2, AMARA), _m(3, VICTOR),
+               _m(4, "system", "system_note", "Mei is asleep, skipping.", targetCharacterId=MEI, debate=opening),
+               _m(5, "system", "system_note", "ROUND 2 · REBUTTAL"), _m(6, "system", "system_note", "ROUND 3 · CLOSING")]
+    missed = missed_turns(skipped, TWO_V_ONE, [AMARA, MEI, VICTOR])
+    assert missed["prop"] == {"missed": 5, "reason": "the debate ended early"}   # 1 asleep in the opening, 4 ended
 
 
 # ── the runtime ──
@@ -192,3 +209,22 @@ async def test_a_fresh_debate_first_command_does_not_start_a_second_chain(api: A
     await command(api, sid, "debate/interject", {"text": "Numbers, please."})
     await api.drive(120000)
     assert speakers(await messages(api, sid)) == [AMARA, VICTOR, MEI, AMARA, VICTOR, MEI]
+
+
+async def test_a_deleted_debater_has_left_rather_than_asleep(api: Api) -> None:
+    """Pass 2 J3-08: a side whose only member was deleted mid-debate says so and offers End, with no Top up. In the
+    opening round Victor's opening was prefetched at Amara's turn: ONE Next must say so (the prefetch is dropped, not
+    run as a silent "missing" turn that used up the press; v1.1 final check)."""
+    sid = await debate(api, cast=[AMARA, VICTOR], sides={"prop": [AMARA], "opp": [VICTOR]}, autoAdvance=False)
+    await api.drive(20000)
+    actor = await api.rt.sessions.get(sid)
+    assert actor.mode.debate_prefetch   # the case under test: Victor's opening is waiting
+    assert (await api.client.delete(f"{API}/characters/{VICTOR}")).status_code == 204
+    await command(api, sid, "debate/next")
+    await api.drive(20000)
+    msgs = await messages(api, sid)
+    assert any(m["content"] == "Victor has left." for m in msgs)
+    assert any(m["content"] == "The Opposition has no one left. End the debate to finish." for m in msgs)
+    assert not any("Victor is asleep (" in m["content"] for m in msgs)
+    evs = await events(api, sid)
+    assert not any(e["type"] == "error" and e["payload"]["code"] == "energy_exhausted" for e in evs)

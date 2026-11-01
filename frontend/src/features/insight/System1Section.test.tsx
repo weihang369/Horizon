@@ -154,3 +154,20 @@ describe("System 1 section", () => {
     expect(showSystem1(trace, false)).toBe(true);
   });
 });
+
+describe("the search's waits after the plan that searched (audit D-17)", () => {
+  it("a paused debate's turn: after the turn plan whose gate said yes, not the debate plan's member row", () => {
+    const t: TurnTrace = {
+      messageId: "msg_d1",
+      search: { vectorMs: 300 },
+      system1: {
+        questions: [
+          { purpose: "debate_plan", id: "member_rebuttal", version: 1, label: "who argues next?", answer: "chr_seedHana", result: "used" },
+          { purpose: "turn_plan", id: "docs", version: 1, label: "needs documents?", about: "chr_seedHana", answer: "yes", p: 0.8, result: "used" },
+        ],
+      },
+    } as TurnTrace;
+    const html = renderToStaticMarkup(createElement(System1Rows, { trace: t, nameOf }));
+    expect(html.indexOf('data-purpose="search"')).toBeGreaterThan(html.indexOf('data-purpose="turn_plan"'));
+  });
+});

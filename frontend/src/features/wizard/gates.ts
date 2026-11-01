@@ -11,17 +11,22 @@ export const stepIndex = (s: CreationStep | undefined): number => (s ? CREATION_
 
 export type ProfileErrors = Partial<Record<"name" | "role" | "age" | "tagline" | "traits", string>>;
 
+/** The backend's stand-in role while a draft is written (characters.py `PLACEHOLDER_ROLE`): never a real role. */
+export const PLACEHOLDER_ROLE = "Drafting…";
+
 /** CHR-04 AC1: required fields, adult age, tagline ≤ 80, traits 3–8. */
 export function validateProfile(p: Pick<CharacterProfile, "name" | "role" | "age" | "tagline" | "personality">): ProfileErrors {
   const e: ProfileErrors = {};
   if (!p.name.trim()) e.name = "Every character needs a name.";
-  if (!p.role.trim()) e.role = "Give them a role, even a loose one.";
+  // A cancelled or failed draft leaves the stand-in role, which Approve refuses at the very end (pass 2 J5-04)
+  if (!p.role.trim() || p.role.trim() === PLACEHOLDER_ROLE) e.role = "Give them a role, even a loose one.";
   if (!Number.isInteger(p.age)) e.age = "Age must be a whole number.";
   else if (p.age < 18) e.age = "Horizon characters are adults.";
   else if (p.age > 120) e.age = "That's a little too legendary.";
   if (p.tagline.length > 80) e.tagline = "Keep the tagline to 80 characters.";
   const n = p.personality.traits.length;
-  if (n > 0 && n < 3) e.traits = "Pick at least 3 traits.";
+  // The contract needs 3–8 (personality.traits minItems): none passed here and the save then failed (pass 2 J5-06)
+  if (n < 3) e.traits = "Pick at least 3 traits.";
   if (n > 8) e.traits = "8 traits at most.";
   return e;
 }

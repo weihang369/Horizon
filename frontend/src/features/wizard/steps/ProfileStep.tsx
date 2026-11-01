@@ -1,5 +1,5 @@
 // S05b PROFILE (CHR-03 drafting state, CHR-04 edit profile = system prompt, CHR-05 prompt preview).
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { openOverlay } from "@/app/layers";
 import { client } from "@/client";
@@ -10,14 +10,14 @@ import { cx } from "@/ui/cx";
 import { ActionBar } from "../ActionBar";
 import { useWizard } from "../context";
 import { Section, TagInput } from "../fields";
-import { cancelJob, isRunning, rememberJob, startGeneration } from "../generate";
+import { cancelJob, isRunning, rememberJob, startGeneration, useJobWait } from "../generate";
 import { gateFrom, validateProfile } from "../gates";
 import type { ProfileField } from "../options";
 import { PromptPreview } from "./PromptPreview";
 import s from "./steps.module.css";
 
 export function ProfileStep() {
-  const { character: c, jobs, work, goStep, facts, edit, world } = useWizard();
+  const { character: c, jobs, work, goStep, facts, edit, world, save } = useWizard();
   const draftJob = useJob(jobs.profile_draft).data;
   const drafting = isRunning(draftJob);
   const failed = draftJob?.status === "failed";
@@ -26,7 +26,9 @@ export function ProfileStep() {
   const [touched, setTouched] = useState<Set<string>>(new Set());
   const [showPrompt, setShowPrompt] = useState(false);
   const [regen, setRegen] = useState<{ field: ProfileField; jobId: string } | null>(null);
+  const going = useRef(false);   // pass 2 J5-09: `regen` is set only after the save and the start, so a 2nd click saved twice
   const regenJob = useJob(regen?.jobId).data;
+  const wait = useJobWait(c?.id);
   const edited = new Set(work.w.editedFields);
 
   // A regenerated field lands: copy just that field from the server copy (CHR-04 AC2).
@@ -48,10 +50,18 @@ export function ProfileStep() {
   const regenerate = (field: ProfileField) => {
     if (!c || regen) return;
     const go = async () => {
-      const job = await startGeneration({ characterId: c.id, kind: "profile_regenerate", targetField: field }, `Regenerate ${field}`, { confirm: false });
-      if (job) {
-        rememberJob(job);
-        setRegen({ field, jobId: job.id });
+      if (going.current) return;
+      going.current = true;
+      try {
+        // The rewrite reads the saved card, so unsaved edits (a new role) are saved first, as Next does (audit C-P1-5).
+        if (work.dirty && !(await save())) return;
+        const job = await startGeneration({ characterId: c.id, kind: "profile_regenerate", targetField: field }, `Regenerate ${field}`, { confirm: false });
+        if (job) {
+          rememberJob(job);
+          setRegen({ field, jobId: job.id });
+        }
+      } finally {
+        going.current = false;
       }
     };
     if (edited.has(field)) {
@@ -60,8 +70,9 @@ export function ProfileStep() {
   };
   const regenProps = (field: ProfileField) => ({
     onRegenerate: () => regenerate(field),
-    regenerateLabel: `Regenerate ${field} with AI`,
+    regenerateLabel: wait ?? `Regenerate ${field} with AI`,
     regenerateText: "AI rewrite",
+    regenerateDisabled: !!wait,
     edited: edited.has(field),
     readOnly: regen?.field === field,
   });

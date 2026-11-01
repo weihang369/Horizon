@@ -13,6 +13,7 @@ from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Any
 
 from horizon.ai.contexts import DebateMeta, HostKey, LineHint
+from horizon.api.errors import conflict
 from horizon.domain import vclock
 from horizon.sessions import debate_host, debate_plan, debate_verdict
 from horizon.sessions.context import session_context
@@ -160,7 +161,9 @@ async def first_opening(actor: SessionActor) -> str | None:
 
 async def next_slot(actor: SessionActor) -> tuple[int, str | None, Fill] | None:
     """The next slot of this phase and how it is filled (D3), or None when the phase is done. A slot with a prefetched
-    opening is that member's; otherwise the slot rule decides from who is awake now."""
+    opening is that member's while they still exist (its energy was drawn when it started, so asleep doesn't matter);
+    a deleted member's prefetch is dropped and the slot rule decides, so the side's "has left" note comes on this
+    step rather than after a silent "missing" turn (v1.1 final check)."""
     cfg, cast = cfg_of(actor), _cast(actor)
     slots = phase_slots(cfg, cast)
     cur = cursor(_messages(actor))
@@ -169,7 +172,10 @@ async def next_slot(actor: SessionActor) -> tuple[int, str | None, Fill] | None:
     side = slots[cur.used]
     pf = actor.mode.debate_prefetch.get(cur.used)
     if pf is not None:
-        return cur.used, side, Fill("speak", who=pf.spec.speaker, eligible=(pf.spec.speaker,))
+        if await runner(actor).energy_now(pf.spec.speaker) is not None:
+            return cur.used, side, Fill("speak", who=pf.spec.speaker, eligible=(pf.spec.speaker,))
+        actor.mode.debate_prefetch.pop(cur.used, None)
+        await pf.discard()
     side_members = members(cfg, cast, side)
     awake = {c: not await is_asleep(actor, c) for c in side_members}
     return cur.used, side, fill(side_members, cur.heard, awake)
@@ -202,8 +208,13 @@ async def pause_side(actor: SessionActor, side: str | None, asleep: tuple[str, .
     and the debate pauses with reason `user`. The slot is kept: play runs it again."""
     for cid in asleep:
         await asleep_note(actor, cid, skipping=False, debate=meta(actor))
-    text = ("Everyone on the panel is asleep. Top someone up to continue the debate." if side is None else
-            f"The {SIDE_NAME[side]} is asleep. Top someone up to continue the debate.")
+    gone = [cid for cid in asleep if await runner(actor).energy_now(cid) is None]
+    if asleep and len(gone) == len(asleep):   # pass 2 J3-08: deleted members can't be topped up; only End helps
+        text = ("Everyone on the panel has left. End the debate to finish." if side is None else
+                f"The {SIDE_NAME[side]} has no one left. End the debate to finish.")
+    else:
+        text = ("Everyone on the panel is asleep. Top someone up to continue the debate." if side is None else
+                f"The {SIDE_NAME[side]} is asleep. Top someone up to continue the debate.")
     actor.held = True
     await actor.emit(message_event(note(actor, text)), {"type": "session.paused", "payload": {"reason": "user"}})
 
@@ -501,6 +512,21 @@ def schedule_next(actor: SessionActor, ms: float | None = None) -> None:
     actor.after(ms if ms is not None else float(cfg_of(actor).get("pauseMs", 1500)), go)
 
 
+def kick(actor: SessionActor) -> None:
+    """Step unless a step is already coming (audit D-02). A job that runs once the queue is empty: a step has then set
+    its pause timer; an Ask answer has not, so the debate goes on from here. A pending timer steps by itself only while
+    auto-advance is on (Pause then Play, or auto-advance off and on, inside the pause used to start a second chain)."""
+    async def job() -> None:
+        if len(actor.turns):   # other work first (a step there sets its own timer); then look again
+            actor.enqueue(job)
+            return
+        if actor.held or (actor._timers and cfg_of(actor).get("autoAdvance")):
+            return   # the pause timer is the only `after` a debate sets
+        step(actor)
+
+    actor.enqueue(job)
+
+
 def rearm(actor: SessionActor) -> None:
     """U-43: the auto-advance chain lives in the actor's timer, so an actor loaded from storage mid-round (a restart, an
     idle release) has none. On its first command, after that command's own work, an active, un-held auto-advance
@@ -594,13 +620,38 @@ async def interject(actor: SessionActor, text: str) -> None:
 
 
 def extend_round(actor: SessionActor) -> None:
+    before = _next_now(actor)
     actor.mode.extend = True
     debate_verdict.discard(actor)   # D14: the verdict work made for this transcript is dropped
+    _retarget(actor, before)
 
 
 def skip_to_closing(actor: SessionActor) -> None:
+    before = _next_now(actor)
     actor.mode.skip_to_closing = True
     debate_verdict.discard(actor)
+    _retarget(actor, before)
+
+
+def _next_now(actor: SessionActor) -> tuple[str, int] | None:
+    st = state_of(actor)
+    return next_target(actor, str(st.get("phase")), int(st.get("iteration", 1)))
+
+
+def _retarget(actor: SessionActor, before: tuple[str, int] | None) -> None:
+    """Extend or Skip changed what comes next (audit D-03): the host line and the debate plan asked at the phase's last
+    `turn.end` for the old next phase are cancelled now (recorded `cancelled`), not left to finish and be dropped when
+    the new phase begins (debate-host "Stale host requests are cancelled"; debate-plan "A plan made for a phase that
+    does not open is dropped"). A plan for this phase's next slot stays."""
+    if _next_now(actor) == before:
+        return
+    old = HostKey(kind="lead_in", phase="verdict") if before is None else HostKey(kind="bridge", phase=before[0])
+    pending = actor.mode.host_line
+    if pending is not None and pending.key == old:
+        debate_host.drop(actor)
+    stored = actor.mode.debate_plan
+    if stored is not None and before is not None and stored.target == before:
+        debate_plan.drop(actor)
 
 
 async def pause(actor: SessionActor) -> None:
@@ -614,7 +665,9 @@ async def resume(actor: SessionActor) -> None:
     await actor.emit({"type": "session.resumed", "payload": {"reason": "user"}})
     if debate_verdict.needs_rerun(actor):   # D14's resume rule: the cap-refusal hang is gone
         debate_verdict.resume(actor)
-    elif not actor.busy and len(actor.turns) == 0:
+    elif cfg_of(actor).get("autoAdvance"):
+        kick(actor)
+    elif not actor.busy and len(actor.turns) == 0:   # manual advance: Play runs one step, as before
         step(actor)
 
 
@@ -633,11 +686,14 @@ async def end_debate(actor: SessionActor, with_verdict: bool) -> None:
 
 
 async def pick(actor: SessionActor, side: str) -> None:
-    """D14: the click only records the side; the verdict is delivered by a job when the work is done."""
+    """D14: the click only records the side; the verdict is delivered by a job when the work is done. Only in the
+    verdict phase (pass 2 J3-04): mid-debate it started a paid verdict call and was used later without asking."""
+    if state_of(actor).get("phase") != "verdict":
+        raise conflict("The pick comes at the verdict.")
     debate_verdict.pick(actor, side)
 
 
 async def set_auto_advance(actor: SessionActor, on: bool) -> None:
     await actor.emit(patch_settings({"config": {**cfg_of(actor), "autoAdvance": on}}))
-    if on and not actor.held and not actor.busy:
-        step(actor)
+    if on:
+        kick(actor)

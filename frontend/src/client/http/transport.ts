@@ -113,7 +113,10 @@ async function toError(res: Response): Promise<HorizonError> {
   } catch {
     shape = undefined;
   }
-  const code = (shape?.code ?? STATUS_CODE[res.status] ?? "provider_error") as ErrorCode;
+  // An empty 502/503 is the dev proxy with no backend behind it (a reload on a .py save, the first start): the
+  // server is unreachable for a moment, not a provider failure (pass 2 J6-05)
+  const proxy = !shape && [502, 503].includes(res.status);
+  const code = (shape?.code ?? (proxy ? "network" : STATUS_CODE[res.status]) ?? "provider_error") as ErrorCode;
   return new HorizonError(code, shape?.message, {
     retryable: shape?.retryable,
     retryAfterSec: shape?.retryAfterSec ?? (Number(res.headers.get("Retry-After")) || undefined),

@@ -147,7 +147,7 @@ Start ─ host welcome (DeepSeek, written during the 1.6 s start delay; fixed li
   There is **no `none`**: the slot must be filled. The state holds the motion, the phase, the side, **the last
   opposing argument** in full (with uneven sides the argument just before may be a teammate's, so it is not used), and
   each candidate's latest argument cut to 60 words, so Jev can see who already covered a point (doc 05 X9 amended).
-- **A deadline, not a timeout:** `timeoutsMs.decision.debate_plan` = ~~400~~ ~~500~~ **651** (M11's measured p90),
+- **A deadline, not a timeout:** `timeoutsMs.decision.debate_plan` = ~~400~~ ~~500~~ ~~651~~ **735** (shipped; 651 was M11's measured p90),
   measured from `turn.end`. It **replaces the 400 ms turn gap** for this step (as doc 07 G2 does). *[Group A](checks/group-a.md) A2 measured
   Jev at ≈ 415 ms p50 / 444 p90 / 498 p99 from Malaysia, so 400 missed every call. Per the user's rule (a slow API is
   accepted, Jev stays), the deadline is 500 and `turn.next` comes up to about 500 ms after `turn.end`: a recorded
@@ -386,8 +386,9 @@ Two-sided debates with verdict by **Arbiter** or **You decide** only.
 - **Bars:** Jev's weighted position *w* (1–5) becomes `value` = (*w* − 1) / 4 × 10 ([doc 13](13-wrap-up.md) W11: `unit` × 10), to one decimal (the UI draws
   `value / 10`). `scoresBy: "side"`.
 - **The winner, in code:** each side's mean over the criteria (equal weights); if the difference is under the margin
-  **`verdict.margin`** (start **0.5** on the 0–10 scale, tuned in V11), `strongerCase` is `null` ("TOO CLOSE TO CALL",
-  MULTI-08 AC2b); otherwise the higher side. The bars and the banner can never disagree.
+  **`verdict.margin`** (start **0.5** on the 0–10 scale, tuned in V11; **0.25** shipped), `strongerCase` is `null`
+  ("TOO CLOSE TO CALL", MULTI-08 AC2b); otherwise the higher side. *v1.1: the difference is rounded to 6 decimals
+  first, so a lead of exactly the margin wins (the floats once made 0.25 read as 0.24999999999999956).* The bars and the banner can never disagree.
 - **Jev's confidence is not used** for the winner: the margin already covers a near tie, and a score question's
   confidence measures how peaked one answer is, not the comparison.
 - **Panel debates and verdict "None"** get no scores and no winner (MULTI-05, MULTI-08 AC4): only the prose (V8).
@@ -573,7 +574,7 @@ peak, Jev doesn't):
 
 | Step | When | Latency | Cost |
 |---|---|---|---|
-| Debate plan (V2) | from each `turn.end`, deadline + 400 ms, replacing the turn gap | none extra when Jev is in time | the choice question only, about 4 a debate: ≈ $0.0001 |
+| Debate plan (V2) | from each `turn.end`, by the `debate_plan` deadline (735 ms), replacing the turn gap | none extra when Jev is in time | the choice question only, about 4 a debate: ≈ $0.0001 |
 | Host lines (V6) | welcome at Start, a bridge per round change, the lead-in | hidden by the pause and the banners; at most +1.5 s per round change when late | 4 × ≈ 2,000 in + 60 out ≈ **$0.0013** |
 | Verdict scores (V7) | after the last closing | ≈ 0.3–1 s | ≈ 6,000 tokens ≈ $0.0003 (≈ $0.002 if Jev bills the state per question, 8 questions) |
 | Verdict prose (V8) | after the scores | ≈ 5–8 s, mostly hidden (V9) | ≈ 6,000 in + 300 out ≈ **$0.0011** |

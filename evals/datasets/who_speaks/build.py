@@ -44,7 +44,8 @@ from horizon.evals.datachecks import split_for  # noqa: E402
 
 TRANSCRIPTS = ROOT / "evals" / "transcripts"
 WATCH = ROOT / "evals" / "watch"
-SEED = ROOT / "seed" / "characters"
+# the seed the sets were labelled on (evals/README.md), so a shipped-seed edit never moves a built set (v1.1)
+SEED = ROOT / "evals" / "seed-v0" / "characters"
 USER = "Kai"
 T0 = datetime(2026, 10, 3, 3, 0, tzinfo=UTC)
 WHO = {"amara": "chr_seedAmara", "mei": "chr_seedMei", "victor": "chr_seedVictor",

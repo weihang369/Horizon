@@ -79,6 +79,14 @@ A fork of a debate or watch session SHALL start `paused` with `pausedReason: "us
 - **WHEN** a live 1:1 session is ended and a message is sent to it
 - **THEN** the send rejects with `conflict`
 
+On the backend, a live watch or debate whose session stream has had no subscriber for `memory.leaveGraceMs` (30 s: a
+closed tab or a crashed browser) SHALL be left the same way, so it stops playing and spending. A subscriber returning
+within the grace SHALL cancel it.
+
+#### Scenario: A scene nobody watches
+- **WHEN** a watch is playing and its stream's last subscriber leaves for 30 s
+- **THEN** the session is `paused` with `navigated_away`, and no further line is played
+
 ### Requirement: Delete a session
 `sessions.delete` SHALL stop the session's running work first, then delete the session and everything stored under it (events, messages, traces, citations, summaries) in one commit, then queue an AI purge for the session (see `ai-ports`) and announce `entity.changed { kind: "session" }`. Ledger rows SHALL keep their amounts.
 

@@ -4,7 +4,8 @@ D3, D4, D6, D7, D10, D12, D13; turn-plan spec).
 It plans `agent` 1:1 turns and asks one question per candidate: the emotion (`emotion_reply`, or `emotion_greeting`
 for a generated greeting). M12 (rag D6–D8): a reply to a speaker with searchable documents also asks "needs
 documents?" about them, and "standalone?" and "English?" about the message, in the same request; `route` answers
-deep when the speaker's gate is at or above `t_gate`. A generated greeting asks no gate.
+deep when the speaker's gate is at or above `t_gate`. M13 (memory D26): a speaker with something earlier to search is
+also asked "needs something from earlier?" (`earlier`). A generated greeting asks no gate.
 
 - **state:** M8's `build_turn_plan_state`, with the speaker's document titles when the gate is asked.
 - **ask:** one `turn_plan` request through the `Decider`, waited for until `started_at` + the `turn_plan` deadline. A
@@ -80,7 +81,7 @@ def plan_state_input(req: PlanRequest) -> PlanStateInput:
         about = str((profile.get("personality") or {}).get("summary") or "")
         cands.append(Candidate(id=cid, name=name, role=part.character_role if part is not None else "",
                                about_source=about, face=req.base_face, turns_since=_turns_since(req, cid)))
-    recent = [m for m in s.recent if m.content]
+    recent = [m for m in s.recent if m.content and m.author_type != "system"]   # an asleep note isn't a line (as group)
     if req.latest and recent and recent[-1].author_type == "user":
         recent = recent[:-1]
     you = str((s.world.you or {}).get("displayName") or "")

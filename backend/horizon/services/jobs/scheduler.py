@@ -349,8 +349,9 @@ class JobScheduler:
                 if state == "gone":
                     return
                 if state == "done":
-                    await self._finish(run)
-                    return
+                    if await self._finish(run):
+                        return
+                    continue   # a Retry queued a task meanwhile: run it
                 await self.rt.clock.sleep(tick)
                 if run.cancelled:
                     return
@@ -358,8 +359,9 @@ class JobScheduler:
                 if state == "gone":
                     return
                 if state == "done":
-                    await self._finish(run)
-                    return
+                    if await self._finish(run):
+                        return
+                    continue   # a Retry queued a task meanwhile: run it
         except asyncio.CancelledError:
             raise
         except Exception:
@@ -439,12 +441,15 @@ class JobScheduler:
         return round(float((await conn.execute(select(func.coalesce(func.sum(u.cost_usd), 0.0))
                                                 .where(u.job_id == job_id))).scalar_one()), 6)
 
-    async def _finish(self, run: Run) -> None:
+    async def _finish(self, run: Run) -> bool:
+        """End the job; False when a Retry put a task back in the queue since the runner looked (pass 2 J5-02)."""
         async with self.rt.db.write() as tx:
             job = (await tx.conn.execute(select(t.generation_jobs).where(J.id == run.job_id))).mappings().first()
             if job is None or job["status"] not in ACTIVE:
-                return
+                return True
             tasks = await self._task_rows(tx.conn, run.job_id)
+            if any(x["status"] in ACTIVE for x in tasks):
+                return False
             ok = sum(1 for x in tasks if x["status"] == "succeeded")
             failed = sum(1 for x in tasks if x["status"] == "failed")
             status = "succeeded" if failed == 0 else "failed" if ok == 0 else "partial"
@@ -460,6 +465,7 @@ class JobScheduler:
             tx.publish(GLOBAL, {"type": "entity.changed", "kind": "job", "id": run.job_id})
             tx.publish(GLOBAL, done)
         self.rt.book.release_job(run.job_id)
+        return True
 
     async def _release_character(self, tx: Any, job_id: str, character_id: str, now: str) -> str | None:
         ch = (await tx.conn.execute(select(t.characters).where(C.id == character_id))).mappings().first()
@@ -553,6 +559,11 @@ class JobScheduler:
             self.rt.book.release_job(job_id)
             raise conflict("This character already has another generation job running.") from e
         run = self.runs.get(job_id)
+        if run is not None and run.cancelled:
+            # Pass 2 J5-02: a Retry inside the cancelled runner's last tick. That runner only exits, so the job (running
+            # again) needs a new one; the old one's `finally` leaves a successor in place.
+            del self.runs[job_id]
+            run = None
         if run is None:
             self.launch(job_id)
         return wire
@@ -629,6 +640,7 @@ class JobScheduler:
                             await assets.fail_candidate(tx.conn, x["id"])
                         self._publish_task(tx, job["id"], {**x, "status": "failed", "error": err})
                 # `running` with a stored result stays running: the worker finishes it from the original (no call).
+                await self._skip_unsliced(tx, job["id"], now)
             remaining = await self._remaining_estimate(job["id"], job["kind"])
             async with self.rt.db.read() as conn:
                 chrow = (await conn.execute(select(t.characters).where(C.id == job["character_id"]))).mappings().first()
@@ -640,6 +652,18 @@ class JobScheduler:
             self.launch(job["id"], wait_first=True)
             recovered.append(job["id"])
         return recovered
+
+    async def _skip_unsliced(self, tx: Any, job_id: str, now: str) -> None:
+        """A failed sheet's queued emotions can't be sliced: skipped, as the worker's `fail` does. The runner never starts
+        them itself, so left queued they kept the job running forever (also heals a job an older start left so)."""
+        tasks = await self._task_rows(tx.conn, job_id)
+        if not any(x["type"] == "expression_sheet" and x["status"] == "failed" for x in tasks):
+            return
+        for x in tasks:
+            if x["type"] == "emotion_image" and x["status"] == "queued":
+                await tx.conn.execute(update(t.generation_tasks).where(T.id == x["id"]).values(status="skipped",
+                                                                                               finished_at=now))
+                self._publish_task(tx, job_id, {**x, "status": "skipped"})
 
     async def _remaining_estimate(self, job_id: str, kind: str) -> float:
         async with self.rt.db.read() as conn:

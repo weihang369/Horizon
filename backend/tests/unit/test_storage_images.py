@@ -114,7 +114,7 @@ def test_sheet_slices_into_eight_portraits() -> None:
         assert abs(px[0] - i * 30) < 12  # each cell is its own grid square
 
 
-def test_atomic_write_and_crash_leaves_only_tmp(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_atomic_write_and_a_failed_replace_leaves_nothing_behind(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     target = tmp_path / "gen" / "w" / "c" / "portrait_happy_v2.webp"
     atomic.write_atomic(target, b"first")
     assert target.read_bytes() == b"first"
@@ -128,9 +128,8 @@ def test_atomic_write_and_crash_leaves_only_tmp(tmp_path: Path, monkeypatch: pyt
     monkeypatch.setattr(atomic.os, "replace", crash)
     with pytest.raises(RuntimeError):
         atomic.write_atomic(crash_target, b"second")
-    names = sorted(p.name for p in target.parent.iterdir())
-    assert not crash_target.exists()
-    assert len(names) == 2 and any(n.startswith("portrait_sad_v2.webp.") and n.endswith(".tmp") for n in names)
+    assert not crash_target.exists()   # audit A-22: the temp file goes too (a killed process's is left to the sweeper)
+    assert [p.name for p in target.parent.iterdir()] == [target.name]
 
 
 def test_replace_retries_a_windows_lock(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

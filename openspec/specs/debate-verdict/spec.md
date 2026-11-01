@@ -19,7 +19,11 @@ Under `agent`, a two-sided debate with verdict Arbiter or You decide SHALL make 
 - **THEN** it is asked with the generic entry, the label appears only in a quoted state field, and its bars are drawn like the others
 
 ### Requirement: Code decides the winner
-The stronger case SHALL be the side with the higher mean score over the criteria, or `null` ("TOO CLOSE TO CALL") when the difference is below `verdict.margin` (0.5 by default). Jev's confidence SHALL NOT be used. The bars and the banner SHALL therefore always agree.
+The stronger case SHALL be the side with the higher mean score over the criteria, or `null` ("TOO CLOSE TO CALL") when the difference, rounded to 6 decimals, is below `verdict.margin` (0.25 shipped), so a lead of exactly the margin wins. Jev's confidence SHALL NOT be used. The bars and the banner SHALL therefore always agree.
+
+#### Scenario: A lead of exactly the margin
+- **WHEN** the bars are Proposition 2.7, 3.4, 8.6, 1.2 and Opposition 2.7, 3.4, 8.6, 2.2 with the margin at 0.25
+- **THEN** `strongerCase` is `opp` (the float difference 0.24999999999999956 counts as 0.25)
 
 #### Scenario: A near tie
 - **WHEN** the means are 6.4 and 6.1 with the margin at 0.5

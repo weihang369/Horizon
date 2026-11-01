@@ -170,7 +170,7 @@ How you sound (style only; don't copy these word for word):
 
 # Your world and the user
 World: Meridian.
-The user is <You card name>. About them: <You card line>. To you, they are: <relationshipToUser>.
+The user is <You card name>. About them: <You card line>. You are <name>'s <relationshipToUser without "your">.
 ```
 
 - **Added:** `relationshipToUser` (the bug in §2), and a "Looks" line from `appearanceSummary`, so self-descriptions
@@ -223,7 +223,7 @@ very long backstory also drowns the speaking style.
 | Mode | The block says | Length line (C4) |
 |---|---|---|
 | 1:1 | "This is a private one-to-one chat with {user}." | "Write 1–3 short messages, each on its own line, about 70 words in all." |
-| Group | "This is a group chat with {user} and: Hana (barista), Rin (…)." Names with profile roles. | "Write 1–2 short messages, each on its own line, about 50 words in all." |
+| Group | "This is a group chat with {user} and: Hana (barista), Rin (…)." Names with profile roles. Then, when any of them has a "Relationship to you": "How they relate to {user}: Hana is {user}'s girlfriend of two years; …" (a leading "your" is read as "{user}'s"; audit T-03, label `+rel-1`). | "Write 1–2 short messages, each on its own line, about 50 words in all." |
 | Watch | "{user} is watching this scene from outside it and may step in. Until {user} speaks in it, talk to each other, not to {user}. Premise: … With you: …" (U-64) | "Write 1–2 short lines, each on its own line, about 50 words in all." |
 | Debate | The motion, your side and teammates, your opponents (worded in doc 08 V4). | "Write one paragraph, no line breaks, about {80 / 140 / 220} words." |
 
@@ -407,7 +407,9 @@ renders the same block).*
 
 **Decision:**
 - **The draft schema adds** `exampleLines` (2–3 short lines; the contract allows 0–3) and `relationshipToUser` (for
-  the `companion` intent; empty, and then omitted, for the others).
+  the `companion` intent; empty, and then omitted, for the others). It is written to the user and starts with "your"
+  ("your favourite late-night radio host"), the contract's convention and the way the persona reads it (v1.1 pass 2
+  J3-01: the first rule asked for the user's side, which the persona then read backwards).
 - **The user message adds** the world's name, the names already used by characters in that world, and the You card
   (so a companion's relationship fits who the user is in this world).
 - **The system prompt adds:**

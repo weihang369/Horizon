@@ -155,8 +155,9 @@ describe("seed fixtures", () => {
           expect(c.quote.length, c.chunkId).toBeLessThanOrEqual(400);
           expect(chunks.get(c.chunkId)?.sourceId).toBe(c.sourceId);
           expect(m.trace?.knowledge?.retrieved.some((r) => r.chunkId === c.chunkId && r.cited && r.n === c.n), m.id).toBe(true);
-          counted[c.sourceId] = (counted[c.sourceId] ?? 0) + 1;
         }
+        // citedCount is per reply, not per marker (audit C-P1-3)
+        for (const id of new Set((m.citations ?? []).map((c) => c.sourceId))) counted[id] = (counted[id] ?? 0) + 1;
       }
     }
     expect(Object.keys(counted).length).toBeGreaterThanOrEqual(4);

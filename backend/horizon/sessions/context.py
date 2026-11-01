@@ -27,11 +27,30 @@ async def _latest_summary(rt: Runtime, sid: str) -> tuple[int, str | None]:
     return (int(r[0]), str(r[1])) if r is not None else (0, None)
 
 
+MUTED_SUFFIX = " is muted."   # the note a muted @mention gets (J3-11): about the app's controls, not the scene
+# Notes written to the user about the app (its controls, a step that failed), not about the scene. The runtime hunt saw
+# a character read "Takeshi is muted." and say "dad's muted" in the story; a captured request carried "Top someone up
+# to continue the scene." into every speaker's history. The user chose (28 Oct) to keep all of them out of every prompt
+# and summary; story notes ("Hana is asleep", "has left", the round banners) stay.
+APP_NOTE_ENDINGS = (MUTED_SUFFIX, "Top someone up to continue the scene.", "Top someone up to continue the debate.",
+                    "End the debate to finish.", "Try Summarise again.")
+APP_NOTES = frozenset({"The arbiter's notes couldn't be written; the summary quotes the speakers.",
+                       "The arbiter couldn't score this debate; here is the summary."})
+
+
+def app_note(m: Any) -> bool:
+    """A note for the user only, kept out of every prompt and summary."""
+    if m["author"]["type"] != "system":
+        return False
+    text = str(m.get("content") or "")
+    return text in APP_NOTES or text.endswith(APP_NOTE_ENDINGS)
+
+
 def _views(msgs: list[Any], names: dict[str, Any]) -> list[MessageView]:
     return [MessageView(id=m["id"], seq=m["seq"], author_type=m["author"]["type"],
                         character_id=m["author"].get("characterId"),
                         name=str(names.get(m["author"].get("characterId") or "", "") or m["author"]["type"]),
-                        kind=m["kind"], content=m["content"], emotion=m.get("emotion")) for m in msgs]
+                        kind=m["kind"], content=m["content"], emotion=m.get("emotion")) for m in msgs if not app_note(m)]
 
 
 async def characters(rt: Runtime, ids: list[str]) -> dict[str, Any]:
@@ -79,6 +98,8 @@ async def session_context(rt: Runtime, actor: SessionActor, *, recent: int | Non
     parts = [ParticipantView(character_id=p["characterId"], name=str(names.get(p["characterId"]) or p["characterId"]),
                              role=p["role"], side=p.get("side"), muted=bool(p.get("mutedByUser")),
                              character_role=str(chars[p["characterId"]]["profile"].get("role") or "")
+                             if p["characterId"] in chars else "",
+                             relation=str(chars[p["characterId"]]["profile"].get("relationshipToUser") or "")
                              if p["characterId"] in chars else "",
                              emotion=str(p.get("currentEmotion") or "neutral"),
                              energy=energy_of(rt, chars[p["characterId"]]) if p["characterId"] in chars else {})

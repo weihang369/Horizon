@@ -8,7 +8,7 @@ export interface Layer<Id extends OverlayId = OverlayId> {
   id: Id;
   kind: LayerKind;
   props: OverlayProps[Id];
-  /** Focus returns here when the layer closes (modals). */
+  /** Focus returns here when the layer closes (modals, popovers; a drawer only when focus was inside it). */
   returnFocusTo: HTMLElement | null;
 }
 
@@ -20,8 +20,9 @@ export interface UiState {
   toasts: Toast[];
   /** Insight selection (O08): which message the drawer shows. */
   insight: { sessionId?: string; messageId?: string };
-  /** O12 DockExpansion currently open (kind) per the active session dock. */
-  dockExpansion: { sessionId: string; kind: OverlayProps["O12"]["kind"]; characterId?: string } | null;
+  /** O12 DockExpansion currently open (kind) per the active session dock. `order` is the layer key it opened at, so Esc
+   * closes a modal opened after it first (audit 03-F10). */
+  dockExpansion: { sessionId: string; kind: OverlayProps["O12"]["kind"]; characterId?: string; order: number } | null;
   perfHud: boolean;
 }
 

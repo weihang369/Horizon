@@ -32,7 +32,8 @@ from horizon.ai.agent.plan_state import Candidate, PlanStateInput, build_turn_pl
 from horizon.evals.datachecks import split_for  # noqa: E402
 
 TRANSCRIPTS = ROOT / "evals" / "transcripts"
-SEED = ROOT / "seed" / "characters"
+# the seed the sets were labelled on (evals/README.md), so a shipped-seed edit never moves a built set (v1.1)
+SEED = ROOT / "evals" / "seed-v0" / "characters"
 USER = "Kai"
 FACES = ("neutral", "happy", "sad", "angry", "surprised", "thinking", "embarrassed")
 ROTATE = ("thinking", "happy", "sad", "angry", "surprised", "embarrassed")

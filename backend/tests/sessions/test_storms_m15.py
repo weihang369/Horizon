@@ -172,9 +172,12 @@ async def test_the_key_cleared_while_call_1_is_held_errors_the_reply(api: Api) -
     held.set()
     await api.drive(20000)
     new = (await messages(api, sid))[before:]
-    assert [m["author"]["type"] for m in new] == ["user"]           # no character line, scripted or other
+    # no character text, scripted or other: the reply's row (pass 2 J2-01) is empty and carries the error
+    assert [m["author"]["type"] for m in new] == ["user", "character"]
+    assert new[1]["content"] == "" and new[1]["status"] == "interrupted"
     errors = [e for e in await events(api, sid) if e["type"] == "error"]
     assert errors and errors[-1]["payload"]["code"] == "missing_key"
+    assert errors[-1]["payload"]["messageId"] == new[1]["id"]
     await assert_writer_free(api.rt.db)
 
 

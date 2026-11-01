@@ -146,3 +146,23 @@ async def test_interrupted_streams_at_startup(make_api: Any, tmp_path: Path) -> 
     reply = chars(await messages(b, sid))[-1]
     assert reply["status"] == "interrupted" and reply["interruptedBy"] == "error"
     await assert_reduces(b, sid)
+
+
+async def test_deleting_a_world_mid_reply_frees_its_session(api: Api) -> None:
+    """Pass 2 J6-01: its live session stops first; before, the turn kept the deleted session "generating" and every
+    new session got 409 until a restart."""
+    await api.set_key()
+    sid = (await create(api, "one_on_one", ["chr_seedAmara"]))["session"]["id"]
+    await api.drive(8000)
+    await command(api, sid, "send", {"text": "Hi again."})
+    await api.drive(50)   # the turn waits in its thinking delay
+    actor = api.rt.sessions.peek(sid)
+    assert actor is not None and actor.generating
+    r = await api.client.delete(f"{API}/worlds/wld_seedMeridian")
+    assert r.status_code == 204, r.text
+    await api.drive(20000)
+    assert api.rt.sessions.active_other(None) is None
+    other = (await create(api, "one_on_one", ["chr_seedHana"], world="wld_seedSunnyHollow"))["session"]["id"]
+    await api.drive(8000)
+    r = await api.post(f"{API}/sessions/{other}/send", {"text": "hello"})
+    assert r.status_code == 202, r.text

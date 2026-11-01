@@ -44,7 +44,8 @@
       "boundaries": [
         "Keeps things SFW"
       ],
-      "greeting": "Right on schedule. Sit down, kid."
+      "greeting": "Right on schedule. Sit down, kid.",
+      "relationshipToUser": "your girlfriend's dad"
     },
     "appearance": {
       "attributes": {

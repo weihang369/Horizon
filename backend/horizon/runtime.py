@@ -26,6 +26,7 @@ import os
 import shutil
 import sqlite3
 import stat
+import sys
 import time
 from collections.abc import AsyncIterator, Coroutine
 from contextlib import asynccontextmanager
@@ -74,9 +75,11 @@ from horizon.sessions.system1 import fixture_row
 from horizon.storage.datalock import DataLock
 from horizon.tracing import TRACER
 from horizon.tracing import configure as configure_tracing
+from horizon.tracing import switch_on as switch_tracing_on
 
 log = logging.getLogger("horizon.runtime")
 T = TypeVar("T")
+SEEDED_MARKER = ".demo-seeded"   # in data/: the demo was imported once (pass 2 J6-02)
 
 
 class Gate:
@@ -301,8 +304,10 @@ class Runtime:
         self._key_status = status
         if became_set and self._ingest is not None and self.started:
             from horizon.services.knowledge.recovery import reembed_user_sources
+            from horizon.services.memory.index import backfill_lines
 
             self.spawn("knowledge:reembed", reembed_user_sources(self))  # D8: user sources, now that a key is set
+            self.spawn("recall:backfill", backfill_lines(self))          # pass 2 J4-02: lines left with no vector
 
     def _build_m2(self) -> None:
         cfg = self.cfg
@@ -373,10 +378,12 @@ class Runtime:
     async def _recover_m5(self) -> None:
         """M5 startup (design D2, D8): resume sources left indexing, then re-embed user sources if a key is set."""
         from horizon.services.knowledge.recovery import recover, reembed_user_sources
+        from horizon.services.memory.index import backfill_lines
 
         self._key_status = self.keys.status()
         await recover(self)
         await reembed_user_sources(self)
+        self.spawn("recall:backfill", backfill_lines(self))   # pass 2 J4-02: in the background, not before serving
 
     def _build_m5(self) -> None:
         from horizon.services.knowledge.worker import IngestionWorker
@@ -456,7 +463,9 @@ class Runtime:
         return to_iso(self.clock.now())
 
     # ── lifecycle ──
-    async def start(self) -> None:
+    async def start(self, *, offline: bool = False) -> None:
+        """`offline` (`horizon space build`): nothing that may call a provider starts (job recovery, re-embedding,
+        memory runs, the cost corrector), so an estimate or a "N" spends nothing; the next real start recovers them."""
         cfg = self.cfg
         self.loop = asyncio.get_running_loop()
         cfg.data_dir.mkdir(parents=True, exist_ok=True)
@@ -484,38 +493,58 @@ class Runtime:
                         "using %s", configured, space.id, space.model, space.model)
         async with self.db.read() as conn:
             empty = not await seeding.has_worlds(conn)
-        if empty:
+        # Pass 2 J6-02 (the user's choice): the demo is imported once, into a fresh install. After that an empty
+        # database is the user's doing (Delete all data) and stays empty; Restore demo data is the way back. A factory
+        # reset wipes the marker with `data/`, so it starts fresh. An install from before the marker that has a world
+        # counts as seeded.
+        marker = cfg.data_dir / SEEDED_MARKER
+        if empty and not marker.exists():
             await self.import_seed()
+        elif not marker.exists():
+            # J6-08: a first start stopped between the seed's commit and its file copy left the shipped documents
+            # without their folders, and later starts never copied them (the marker is written only after both)
+            data = await self.load_seed()
+            async with self.db.read() as conn:
+                kept = set((await conn.execute(select(t.knowledge_sources.c.id).where(
+                    t.knowledge_sources.c.id.in_([k["id"] for k in data.knowledge])))).scalars())
+            await asyncio.to_thread(seeding.install_knowledge_files, data, cfg.knowledge_dir, kept)
+        marker.touch()
         await self.close_interrupted_streams()
+        await self.pause_playing_watches()
         self.clear_scenario_state()
         self._build_m2()
         self._build_m3()  # step 7 (drain ai_purge_queue) starts with the purge worker
         self._build_m4()
         self._build_m5()
-        await self.jobs.recover()  # step 6, before the first request is served
-        await self._recover_m5()
-        self.memory_runs.start()          # M13 (memory D7): the stream-left grace and the triggers
-        await self.memory_runs.sweep()    # trigger 6: after close_interrupted_streams
-        await self.corrector.scan()
+        if not offline:
+            await self.jobs.recover()  # step 6, before the first request is served
+            await self._recover_m5()
+            self.memory_runs.start()          # M13 (memory D7): the stream-left grace and the triggers
+            self.sessions.watch_streams()     # pass 2 J3-07: a watch or debate nobody watches pauses
+            await self.memory_runs.sweep()    # trigger 6: after close_interrupted_streams
+            await self.corrector.scan()
         await asyncio.to_thread(sweep, cfg.data_dir, self.referenced_files_sync())
         self.capture.start()
+        if (warning := long_path_warning(cfg.data_dir, windows=os.name == "nt", long_paths=_long_paths_enabled())):
+            log.warning(warning)
         log.info("AI call capture %s", "ON (HORIZON_CAPTURE_AI_CALLS=1: prompts and replies kept 7 days in ai_calls)"
                  if self.capture.enabled else "off")
         configure_tracing({"HORIZON_LANGSMITH": "1" if cfg.langsmith else "",
                            "LANGSMITH_API_KEY": "set" if cfg.langsmith_key is not None else ""})
         if cfg.langsmith and cfg.langsmith_key is not None and TRACER.enabled:
-            os.environ["LANGSMITH_API_KEY"] = cfg.langsmith_key.get_secret_value()   # langsmith reads it from env
-            os.environ["LANGSMITH_TRACING"] = "true"
+            switch_tracing_on(cfg.langsmith_key.get_secret_value())
         self.started = True
         log.info("horizon backend ready (data=%s, test_mode=%s)", cfg.data_dir, cfg.test_mode)
 
     async def stop(self) -> None:
-        if self._db is not None:
-            await self.capture.stop()   # the last queued rows are flushed while the database is open
         await self._stop_m5()
         await self._stop_m4()
         await self._stop_m3()
         await self._stop_m2()
+        if self._db is not None:
+            # the last queued rows are flushed while the database is open, after the calls cancelled above recorded
+            # theirs (audit A-05: before, those stayed queued and a factory reset wrote them into the new database)
+            await self.capture.stop()
         self.bus.close_all()
         if self._db is not None:
             await self._db.dispose()
@@ -637,6 +666,39 @@ class Runtime:
             async with self.db.write() as tx:
                 await self._close_streams(tx.conn, sid, tx.publish)
 
+    async def pause_playing_watches(self) -> None:
+        """Pass 2 J3-03: a watch's chain of turns lives in its actor's pace timer, which a restart loses. A scene left
+        playing is paused (as leaving it does), so it shows Play instead of "On air" with no turn ever coming."""
+        async with self.db.read() as conn:
+            rows = (await conn.execute(select(t.sessions.c.id, t.sessions.c.state).where(
+                t.sessions.c.mode == "watch", t.sessions.c.status == "active"))).all()
+        for sid, st in rows:
+            st = json.loads(st) if isinstance(st, str) else (st or {})
+            if st.get("status") != "playing":
+                continue
+            async with self.db.write() as tx:
+                conn = tx.conn
+                srow = (await conn.execute(select(t.sessions).where(t.sessions.c.id == sid))).mappings().one()
+                parts = (await conn.execute(select(t.participants).where(t.participants.c.session_id == sid))).mappings().all()
+                last_seq = (await conn.execute(text("SELECT COALESCE(MAX(seq), 0) FROM session_events WHERE session_id = :s"),
+                                               {"s": sid})).scalar_one()
+                state = initial_runtime(mp.session_wire(srow, parts), [])
+                watch = {**st, "status": "paused"}
+                cfg = state["session"].get("config") or {}
+                for typ, payload in (("watch.state", {"status": "paused", "paceMs": cfg.get("paceMs", 1500),
+                                                      "turnsTaken": watch["turnsTaken"], "turnLimit": watch["turnLimit"]}),
+                                     ("session.state", {"state": watch}),
+                                     ("session.paused", {"reason": "navigated_away"})):
+                    last_seq += 1
+                    evt = {"id": new_id("evt"), "sessionId": sid, "seq": last_seq, "at": self.now_iso(), "type": typ,
+                           "payload": payload}
+                    state = apply_event(state, evt)
+                    await conn.execute(t.session_events.insert().values(**mp.event_row(evt)))
+                    tx.publish(session_channel(sid), evt)
+                srow2, _ = mp.session_rows(state["session"], is_seed=bool(srow["is_seed"]))
+                await conn.execute(t.sessions.update().where(t.sessions.c.id == sid).values(
+                    **{k: v for k, v in srow2.items() if k not in ("id", "is_seed")}))
+
     async def _close_streams(self, conn: Any, sid: str, publish: Any) -> None:
         srow = (await conn.execute(select(t.sessions).where(t.sessions.c.id == sid))).mappings().one()
         parts = (await conn.execute(select(t.participants).where(t.participants.c.session_id == sid))).mappings().all()
@@ -732,6 +794,36 @@ def sweep(data_dir: Path, referenced: set[str], *, max_age_s: float = 3600) -> i
 def _on_rm_error(func: Any, path: str, _exc: Any) -> None:
     os.chmod(path, stat.S_IWRITE)
     func(path)
+
+
+# The deepest file Horizon writes sits about this far below `data/` (a generated portrait's temp file:
+# `assets\gen\<world>\<character>\candidate_cand_<ulid>.webp.<hex>.tmp`), and Windows stops at 260 characters.
+DEEPEST_BELOW_DATA = 140
+WINDOWS_MAX_PATH = 260
+
+
+def long_path_warning(data_dir: Path, *, windows: bool, long_paths: bool) -> str | None:
+    """The v1.1 runtime hunt: on Windows with long paths off, a clone in a deep folder can't write its generated images
+    ("The image provider returned an error"). Say so at start-up, with the two ways out."""
+    n = len(str(data_dir))
+    if not windows or long_paths or n + DEEPEST_BELOW_DATA < WINDOWS_MAX_PATH:
+        return None
+    return (f"The data folder's path is {n} characters long ({data_dir}). Windows can't write files more than "
+            f"{WINDOWS_MAX_PATH} characters deep unless long paths are on, so generated images and documents may fail "
+            "to save. Move the clone to a shorter folder (such as C:\\Horizon) or turn on Windows long paths.")
+
+
+def _long_paths_enabled() -> bool:
+    """Windows' `LongPathsEnabled` (Python's own manifest already opts in); False when it can't be read."""
+    if sys.platform != "win32":   # sys.platform, not os.name: mypy on Linux then skips the winreg calls
+        return True
+    try:
+        import winreg
+
+        with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Control\FileSystem") as k:
+            return int(winreg.QueryValueEx(k, "LongPathsEnabled")[0]) == 1
+    except OSError:
+        return False
 
 
 def wipe_data_dir(data_dir: Path, *, attempts: int = 10, delay: float = 0.2) -> None:

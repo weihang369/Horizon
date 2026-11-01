@@ -12,7 +12,7 @@ import { formatRelative } from "@/domain/format";
 import { navigate } from "@/router";
 import { Button, EmptyState, HalftoneDevelop, Skeleton, Tape } from "@/ui";
 import { cx } from "@/ui/cx";
-import { isRunning, startGeneration, useCharacterJobs, useEstimate } from "@/features/wizard/generate";
+import { isRunning, startGeneration, useCharacterJobs, useEstimate, useJobWait } from "@/features/wizard/generate";
 import { useAssetCompareWatcher } from "./compare";
 import { ThemeTrack } from "./ThemeTrack";
 import { ACCEPT, sortSources } from "./knowledge";
@@ -77,6 +77,7 @@ export function GalleryTab({ c, onPreview }: { c: Character; onPreview: (e: Emot
   const set = useJob(jobs.emotion_set).data;
   useAssetCompareWatcher(c, jobs.emotion_regenerate);
   const est = useEstimate({ characterId: c.id, kind: "emotion_regenerate", emotions: ["surprised"] });
+  const wait = useJobWait(c.id);
   const busy = (e: Emotion) => [regen, set].some((j) => isRunning(j) && j!.tasks.some((t) => t.emotion === e && (t.status === "running" || t.status === "queued")));
   const ready = EMOTIONS.filter((e) => !!c.emotions[e]).length;
   return (
@@ -107,7 +108,7 @@ export function GalleryTab({ c, onPreview }: { c: Character; onPreview: (e: Emot
                 <span className={s.gName}>{m.label}</span>
               </div>
               {!ref && !working && c.status !== "archived" && (
-                <button type="button" className={s.gGen} onClick={() => void startGeneration({ characterId: c.id, kind: "emotion_regenerate", emotions: [e] }, `Generate ${m.label.toLowerCase()}`)}>
+                <button type="button" className={s.gGen} disabled={!!wait} title={wait ?? undefined} onClick={() => void startGeneration({ characterId: c.id, kind: "emotion_regenerate", emotions: [e] }, `Generate ${m.label.toLowerCase()}`)}>
                   Generate{est ? <span className="hz-cost-estimate">{` (≈ $${est.toFixed(2)})`}</span> : null}
                 </button>
               )}

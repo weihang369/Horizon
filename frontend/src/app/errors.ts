@@ -19,8 +19,9 @@ export function reportError(err: unknown, opts?: { context?: string; retry?: () 
       const st = entities.getState().settings;
       const daily = e.code === "daily_budget_exceeded";
       // Audit 03-F12: the global `budget.reached` event carries the real figures and may have opened O21 already; the
-      // refusal itself has none for a creation cap, so it never replaces that dialog with $0.
-      if (!daily && ui.getState().layers.some((l) => l.id === "O21")) break;
+      // refusal itself has none for a creation cap, so it never replaces that dialog with $0. Nor, for either cap, does
+      // it know whether anything paused, which only the event says (pass 2 J1-02).
+      if (ui.getState().layers.some((l) => l.id === "O21")) break;
       const num = (v: unknown) => (typeof v === "number" ? v : undefined);
       openOverlay("O21", {
         scope: daily ? "daily" : "creation",

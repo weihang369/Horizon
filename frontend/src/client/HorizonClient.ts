@@ -213,7 +213,7 @@ export interface IngestProgress { stage: "extracting" | "chunking" | "embedding"
 export type GlobalEvent =
   | { type: "entity.changed"; kind: EntityKind; id?: string; worldId?: string; progress?: IngestProgress }
   | { type: "budget.warning"; scope: "daily" | "creation"; spentUsd: number; capUsd: number }
-  | { type: "budget.reached"; scope: "daily" | "creation"; spentUsd: number; capUsd: number; sessionId?: string; jobId?: string }
+  | { type: "budget.reached"; scope: "daily" | "creation"; spentUsd: number; capUsd: number; paused: boolean; sessionId?: string; jobId?: string }
   | { type: "job.progress"; job: GenerationJob }
   /** rev 1.3: every task change is mirrored onto the global stream (the backend has no per-job stream). */
   | { type: "task.update"; jobId: string; task: GenerationTask }

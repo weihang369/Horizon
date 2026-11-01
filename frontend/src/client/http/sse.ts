@@ -71,6 +71,8 @@ export class GlobalStream {
       for (const s of [...this.subs]) s({ type: "mock.reset" });
     });
     es.addEventListener("error", () => {
+      // The browser reconnects by itself (CONNECTING) after a backend restart: that open is a resync too (J6-04)
+      if (this.es === es) this.missed = true;
       if (es.readyState !== CLOSED || this.es !== es) return;
       this.es = null;
       this.missed = true;
