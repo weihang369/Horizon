@@ -45,7 +45,7 @@ Each HTTP test SHALL start from freshly seeded data with the test-mode overlays,
 
 ### Requirement: Client-specific steps live in fixtures
 Steps that differ between clients SHALL be fixtures with one name and the same visible effect on both clients:
-- **Setting a key** enters a fake key in Settings → Connection on both clients.
+- **Setting a key** enters a fake key in Settings → Connection on the HTTP client, and uses the mock state switcher's Set mock key on the mock client (the online demo has no key field).
 - **Applying a scenario** uses the mock state switcher on the MockClient and the backend's test route on HTTP.
 - **Waiting for a generation job** allows the backend's real-time pacing on HTTP.
 
@@ -78,5 +78,5 @@ A test SHALL fail on any console error or warning, or any uncaught page error, o
 When a spec passes on the MockClient and fails on HTTP because the backend shows different data or text, the backend or its seed import SHALL be fixed to match. The spec SHALL NOT be loosened. A difference that needs a contract or UI change SHALL be raised with the user before anything changes.
 
 #### Scenario: Seed text differs
-- **WHEN** the Knowledge spec expects "2 sources · cited 6× in conversations" and the HTTP run shows a different count
+- **WHEN** the Knowledge spec expects "2 sources · cited 4× in conversations" and the HTTP run shows a different count
 - **THEN** the backend's seed data or read model is corrected until both clients show the same text

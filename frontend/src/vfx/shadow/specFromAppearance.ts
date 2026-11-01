@@ -23,6 +23,7 @@ const COLOR_WORDS: Record<string, string> = {
   white: "#F2F2F2", pink: "#FF8FB8", lavender: "#C3A3F0", teal: "#2EC4B6", navy: "#3557A0", burgundy: "#8C2A44",
   blue: "#4A8BE8", green: "#3DBA6A", red: "#E64646", purple: "#9A5AE0",
 };
+const HEX = /^#(?:[0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/;
 
 function hairFrom(a: Appearance["attributes"]["hair"]): ShadowHair {
   const style = a.style.toLowerCase();
@@ -68,7 +69,8 @@ export function identityFromAppearance(appearance: Appearance): Identity {
   const build = at.body.build.toLowerCase();
   const shoulders = /broad|stocky|athletic/.test(build) ? 1.07 : /slim|petite/.test(build) ? 0.93 : 1;
   const streakWord = at.hair.streakColor?.toLowerCase();
-  const streak = streakWord ? COLOR_WORDS[streakWord] ?? (streakWord.startsWith("#") ? streakWord : "#C9CED6") : undefined;
+  // Only a real hex colour passes through: it lands in an SVG attribute, where a free-text "#c00 & gold" broke the image.
+  const streak = streakWord ? COLOR_WORDS[streakWord] ?? (HEX.test(streakWord) ? streakWord : "#C9CED6") : undefined;
   return {
     hair: hairFrom(at.hair),
     glasses,

@@ -57,11 +57,13 @@
   "others": [
    {
     "name": "Amara Okafor",
-    "role": "Emergency physician & public-health researcher"
+    "role": "Emergency physician & public-health researcher",
+    "relation": ""
    },
    {
     "name": "Victor Hale",
-    "role": "Constitutional litigator"
+    "role": "Constitutional litigator",
+    "relation": ""
    }
   ],
   "premise": "",

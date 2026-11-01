@@ -46,7 +46,8 @@ from horizon.evals.m12_sets import seed_titles  # noqa: E402
 
 DATASETS = ROOT / "evals" / "datasets"
 TRANSCRIPTS = ROOT / "evals" / "transcripts"
-SEED = ROOT / "seed" / "characters"
+# the seed the sets were labelled on (evals/README.md), so a shipped-seed edit never moves a built set (v1.1)
+SEED = ROOT / "evals" / "seed-v0" / "characters"
 USER = "Kai"
 T0 = datetime(2026, 10, 15, 3, 0, tzinfo=UTC)
 WHO = {"amara": "chr_seedAmara", "mei": "chr_seedMei", "victor": "chr_seedVictor",

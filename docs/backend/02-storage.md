@@ -367,7 +367,7 @@ embedding_spaces  id PK ('qwen3-emb-8b@1024'), model, provider, dims, dtype ('fl
 
 ## 5. Migrations and seed import
 
-- **Alembic** `0001_initial` creates every ordinary table and the FTS tables (vec tables are left to the SpaceManager). The app runs `upgrade head` at startup. There are no downgrades; backup is a copy of `data/`.
+- **Alembic** `0001_initial` creates every ordinary table and the FTS tables (vec tables are left to the SpaceManager). The app runs `upgrade head` at startup. The app never downgrades (some migrations have a `downgrade()` for development); backup is a copy of `data/`.
 - **Seed import** (`services/seed.py`):
   1. **Validate** every file against the contract schema.
   2. **Normalise** timestamps to milliseconds.
@@ -381,8 +381,9 @@ embedding_spaces  id PK ('qwen3-emb-8b@1024'), model, provider, dims, dtype ('fl
      piece, as before.
   6. **Index** FTS immediately.
 
-  So install, Reset demo data and Delete all data each restore a demo that searches by vector at $0 (NFR-30 holds:
-  nothing is spent). On another active space the shipped vectors are skipped and the documents read `keyword_only`
+  So install, Reset demo data and a factory reset each restore a demo that searches by vector at $0 (NFR-30 holds:
+  nothing is spent). Install means a fresh one: the first import writes `data/.demo-seeded`, so a database the user
+  emptied with Delete all data stays empty across restarts until Restore demo data (v1.1 pass 2 J6-02). On another active space the shipped vectors are skipped and the documents read `keyword_only`
   until the user's per-source Index (D-91). Every run also imports the default-scenario overlays in `seed/_mock/**` (characters, sessions, songs, ledger rows; not `variants/`) as shipped rows, so a local install shows the same full demo as the web demo (D-104). Their fixture jobs (Kenji's and Aoi's emotion sets) are imported **in test mode (`HORIZON_TEST=1`) only**, so the portable contract suite sees the MockClient's dataset; in a normal run they are left out, with the characters' `activeJobId`.
 - **Wire `isSeed` vs. `is_seed`.** Worlds, characters and sessions store the wire `isSeed` they ship with (the `_mock` overlays ship `false`); reset finds them by the seed dataset's ids. Memory, knowledge, songs, jobs and ledger rows have no wire flag, so their `is_seed` means "shipped, restored by reset".
 - **Seed timestamps** are normalised everywhere they occur, nested JSON included, so events, messages and traces stay consistent.

@@ -37,7 +37,7 @@ def _base(cid: str, wid: str) -> dict[str, Any]:
 
 def _m(cid: str) -> CastMember:
     p = _c(cid)["profile"]
-    return CastMember(name=p["name"], role=p["role"])
+    return CastMember(name=p["name"], role=p["role"], relation=p.get("relationshipToUser") or "")
 
 
 def cases() -> dict[str, tuple[str, PersonaInput]]:
@@ -51,6 +51,12 @@ def cases() -> dict[str, tuple[str, PersonaInput]]:
                                                               others=[_m("chr_seedAmara"), _m("chr_seedVictor")])),
         "takeshi_group": ("Takeshi in a Sunny Hollow group", PersonaInput(
             **_base("chr_seedTakeshi", S), mode="group", others=[_m("chr_seedHana"), _m("chr_seedRin")])),
+        # audit T-03: how the others relate to the user, "your …" read with the user's name ("the user" with no You)
+        "hana_group_relations": ("Hana in a group whose others relate to the user, no You card", PersonaInput(
+            **{**_base("chr_seedHana", S), "you": None}, mode="group", others=[
+                CastMember(name="Takeshi Morisaki", role="Retired train engineer", relation="your girlfriend's dad"),
+                CastMember(name="Rin Morisaki", role="Grad student", relation="Your girlfriend's younger sister."),
+                CastMember(name="Ayu", relation="a neighbour from the bakery")])),
         "rin_watch": ("Rin in a watch scene", PersonaInput(**_base("chr_seedRin", S), mode="watch",
                                                            premise="A summer storm knocks the power out at the shop",
                                                            others=[_m("chr_seedHana"), _m("chr_seedTakeshi")])),
@@ -63,6 +69,8 @@ def cases() -> dict[str, tuple[str, PersonaInput]]:
             debate=DebateBlock(motion="Remote work is better for cities", format="panel"))),
         "hana_companion_no_you": ("A companion relationship and no You card", PersonaInput(
             **{**_base("chr_seedHana", S), "you": None, "profile": {**hana, "relationshipToUser": "your old friend"}})),
+        "hana_plain_relation": ("A relationship that doesn't start with \"your\" is quoted from the user's side", PersonaInput(
+            **{**_base("chr_seedHana", S), "profile": {**hana, "relationshipToUser": "Childhood friend from the bakery street."}})),
         "cut_backstory": ("P4: a 5,000-word backstory cut at a sentence end", PersonaInput(
             **{**_base("chr_seedAmara", M), "profile": {**amara, "backstory": " ".join(
                 f"Night {i} on the ward taught her something new about Dr. Okafor's patience." for i in range(450))}})),

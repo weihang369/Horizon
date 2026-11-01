@@ -218,4 +218,4 @@ data: {"messageId":"msg_…","delta":"Honestly? "}
 | 12 | `AppSettings.energy.estReplyPoints: { off_peak, peak }` (read-only, from config), so the UI and backend read one energy threshold (doc 04 §4) |
 | 13 | **MockClient parity:** the new error codes, the tombstone, seed-only reset (user forks survive), knowledge add/delete, cover upload and the top-up gate (D-76) |
 
-**`chat.continue` (D-58 candidate) is deferred again.** "Continue" keeps meaning *regenerate* in the MVP. A real continuation needs prefix-completion support on the pinned DeepSeek endpoint, which the AI stage verifies.
+**`chat.continue` (D-58 candidate) is deferred again.** "Continue" kept meaning *regenerate* in the MVP, so the UI shows one chip, Regenerate. A real continuation needs prefix-completion support on the pinned DeepSeek endpoint, which the AI stage verifies.

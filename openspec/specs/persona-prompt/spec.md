@@ -24,8 +24,9 @@ The `agent` system message SHALL hold, in order: "Who you are" (the card), "Your
 The card SHALL include every profile field that shapes speech: name, title, age, pronouns, role, personality, traits, backstory, goals, expertise, boundaries, a "Looks" line from the appearance summary, the speaking style, tone, formality, quirks, catchphrases (marked "use rarely") and example lines (marked "style only; don't copy these word for word"). It SHALL leave out the tagline, greeting, palette, song brief and raw appearance attributes. Empty fields SHALL be skipped.
 
 #### Scenario: Relationship reaches the prompt
-- **WHEN** a companion character with `relationshipToUser` "your girlfriend" is compiled
-- **THEN** the world block says "To you, they are: your girlfriend."
+- **WHEN** a companion character with `relationshipToUser` "your girlfriend" is compiled for a user named Kai
+- **THEN** the world block says "You are Kai's girlfriend." (read from the speaker's side; a text that doesn't start with
+  "your" reads "To Kai, you are: …"; with no You card the user is "the user"; the trace label adds `+rel-1`)
 
 #### Scenario: No tagline
 - **WHEN** a character whose tagline equals its catchphrase is compiled
@@ -49,7 +50,8 @@ Measured by the shared token count (UTF-8 bytes ÷ 3, rounded up), each free-tex
 ### Requirement: The session block per mode
 The session block SHALL describe the mode once, with its length line:
 - **1:1:** a private chat;
-- **group:** the others with their profile roles;
+- **group:** the others with their profile roles, then one line naming how each of them relates to the user, from
+  their "Relationship to you" (a leading "your" read as "{user}'s"; none set, no line);
 - **watch:** the premise, that the user may step in, and that until the user speaks in it the characters talk to each
   other, not to the user (U-64: the watcher is off-stage);
 - **debate:** the motion, the speaker's side and teammates, and the opponents with their roles; a panel lists the others.
@@ -59,6 +61,11 @@ The user SHALL be the You card's display name, or "the user".
 #### Scenario: Group names roles
 - **WHEN** Amara's group prompt is compiled with Hana (barista) and Rin
 - **THEN** the session block names "Hana (barista)", and says "Write 1–2 short messages, each on its own line, about 50 words in all."
+
+#### Scenario: Group names how the others relate to the user
+- **WHEN** Takeshi's group prompt is compiled with Hana, whose "Relationship to you" is "your girlfriend of two years",
+  and the You card's name is Kai
+- **THEN** the session block says "How they relate to Kai: Hana Morisaki is Kai's girlfriend of two years."
 
 #### Scenario: Debate side
 - **WHEN** a two-sided debate prompt is compiled for a proposition speaker with one teammate

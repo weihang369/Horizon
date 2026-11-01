@@ -27,6 +27,7 @@ from horizon.db.uow import Database
 from horizon.domain.clock import Clock
 from horizon.domain.energy import points_for_cost
 from horizon.domain.timeutil import parse_iso, to_iso
+from horizon.events.bus import GLOBAL
 from horizon.gateway.errors import ProviderError
 from horizon.gateway.meta import GenerationInfo
 from horizon.services.energy_writes import EnergyLocks, EnergyParams, adjust_change, apply_energy
@@ -144,6 +145,7 @@ class CostCorrector:
                                             .where(U.cost_source == "estimate").values(**values))
                 if res.rowcount != 1:
                     return False
+                tx.publish(GLOBAL, {"type": "entity.changed", "kind": "usage"})   # audit A-07: Spend shows the actual
                 if cid:
                     p = self.energy_params()
                     delta = points_for_cost(info.cost_usd, p.usd_per_point) - points_for_cost(float(row["cost_usd"]), p.usd_per_point)

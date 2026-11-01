@@ -99,7 +99,14 @@ def _not_utf8(kind: FileKind) -> HorizonHTTPError:
     return validation(f"This .{kind} file isn't UTF-8 text.", {"field": "file", "reason": "not_utf8"})
 
 
+def _well_formed(s: str) -> str:
+    """A lone UTF-16 surrogate (half an emoji from a broken paste; JSON allows it) becomes U+FFFD, as the browser's
+    TextEncoder does in the mock: it can't be stored as UTF-8, and it was a 500 (pass 2 J4-05)."""
+    return s.encode("utf-16-le", "surrogatepass").decode("utf-16-le", "replace")   # a valid pair joins up
+
+
 def check_text(title: str | None, text: str | None) -> PastedText:
+    title, text = _well_formed(title or ""), _well_formed(text or "")
     t = (title or "").strip()
     if not t:
         raise validation("Give the pasted text a title.", {"field": "title"})

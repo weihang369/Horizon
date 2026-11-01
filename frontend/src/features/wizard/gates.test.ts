@@ -17,6 +17,8 @@ describe("validateProfile (CHR-04)", () => {
   it("caps tagline at 80 and traits at 3–8", () => {
     expect(validateProfile({ ...base, tagline: "x".repeat(81) }).tagline).toBeTruthy();
     expect(validateProfile({ ...base, personality: { summary: "", traits: ["a"] } }).traits).toBeTruthy();
+    expect(validateProfile({ ...base, personality: { summary: "", traits: [] } }).traits).toBeTruthy(); // J5-06: the contract needs 3
+    expect(validateProfile({ ...base, role: "Drafting…" }).role).toBeTruthy(); // J5-04: a draft's stand-in role
     expect(validateProfile({ ...base, personality: { summary: "", traits: Array(9).fill("t") } }).traits).toBeTruthy();
   });
 });

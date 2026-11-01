@@ -100,7 +100,6 @@
   box-shadow: inset 4px 0 0 var(--horizon-500);
   clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
 }
-.demoNotice { max-width: 860px; margin-bottom: 18px; }
 .status[data-status="set"] { box-shadow: inset 4px 0 0 var(--signal-ok); }
 .status[data-status="invalid"] { box-shadow: inset 4px 0 0 var(--signal-err); }
 .statusKey { font: 600 15px/1 var(--font-mono); }

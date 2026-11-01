@@ -14,7 +14,7 @@ import { cx } from "@/ui/cx";
 import { isPlaceholderUrl } from "@/vfx/shadow";
 import { ActionBar } from "../ActionBar";
 import { useWizard } from "../context";
-import { isRunning, retryJobTask, startGeneration, useEstimate } from "../generate";
+import { isRunning, retryJobTask, startGeneration, useEstimate, useJobWait } from "../generate";
 import { gateFrom } from "../gates";
 import s from "./steps.module.css";
 
@@ -35,6 +35,7 @@ export function PortraitStep() {
   const [locking, setLocking] = useState<string | null>(null);
   const estGen = useEstimate(c ? { characterId: c.id, kind: "portrait_candidates" } : null);
   const estTweak = useEstimate(c ? { characterId: c.id, kind: "portrait_tweak", prompt: "tweak" } : null);
+  const wait = useJobWait(c?.id);
   if (!c) return null;
 
   const jobsList = [candJob, tweakJob].filter((j): j is GenerationJob => !!j);
@@ -63,9 +64,10 @@ export function PortraitStep() {
     }
   };
   const generate = () => void startGeneration({ characterId: c.id, kind: "portrait_candidates" }, "Generate portrait");
+  const tweakOff = !!wait || !tweak.trim() || !c.appearance.basePortraitUrl && !cands.some((x) => x.status === "ready");
   const applyTweak = async () => {
     const text = tweak.trim();
-    if (!text) return;
+    if (tweakOff) return;   // pass 2 J5-09: Enter obeys the button's rule
     const job = await startGeneration({ characterId: c.id, kind: "portrait_tweak", prompt: text }, "Tweak portrait");
     if (job) setTweak("");
   };
@@ -88,7 +90,7 @@ export function PortraitStep() {
             <div className={s.ghostCard} aria-hidden="true"><span>?</span></div>
             <div>
               <p className={s.lede}>Your look is set. Paint a first portrait from it, then lock the one you like as the base for every emotion.</p>
-              <Button variant="primary" size="lg" cost={estGen ?? undefined} onClick={generate}>Generate portrait ▸</Button>
+              <Button variant="primary" size="lg" cost={estGen ?? undefined} disabled={!!wait} title={wait ?? undefined} onClick={generate}>Generate portrait ▸</Button>
             </div>
           </div>
         ) : (
@@ -152,12 +154,12 @@ export function PortraitStep() {
               onChange={(e) => setTweak(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && void applyTweak()}
             />
-            <Button variant="secondary" disabled={!tweak.trim() || !c.appearance.basePortraitUrl && !cands.some((x) => x.status === "ready")} cost={estTweak ?? undefined} onClick={() => void applyTweak()}>Apply tweak</Button>
-            <Button variant="ghost" cost={estGen ?? undefined} disabled={busy} onClick={generate}>↻ New candidates</Button>
+            <Button variant="secondary" disabled={tweakOff} cost={estTweak ?? undefined} onClick={() => void applyTweak()}>Apply tweak</Button>
+            <Button variant="ghost" cost={estGen ?? undefined} disabled={busy || !!wait} onClick={generate}>↻ New candidates</Button>
           </div>
         )}
       </section>
-      <ActionBar note={!gate.ok ? <span className={s.gateNote}>{gate.reason}</span> : undefined}>
+      <ActionBar note={!gate.ok ? <span className={s.gateNote}>{gate.reason}</span> : wait && !busy ? <span className={s.gateNote}>{wait}</span> : undefined}>
         <Button variant="primary" size="lg" disabled={!gate.ok} onClick={() => void goStep("emotions")}>Next: Emotions ▸</Button>
       </ActionBar>
     </>

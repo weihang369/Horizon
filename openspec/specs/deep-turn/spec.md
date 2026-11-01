@@ -85,7 +85,7 @@ A passage SHALL be usable when p(answers) + p(partly) ≥ `t_keep`, and found wh
 - partly: no found passage, but a usable one;
 - not found: no usable passage with every request back.
 
-At most k usable passages SHALL be kept, best first (3 in 1:1, 2 otherwise).
+At most k passages SHALL be kept, best first (3 in 1:1, 2 otherwise): the usable ones, and on found also any found passage that isn't usable.
 
 #### Scenario: Group keeps two
 - **WHEN** a group reply's check finds three usable passages

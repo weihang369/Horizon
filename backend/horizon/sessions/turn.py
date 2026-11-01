@@ -67,6 +67,15 @@ _MARKER = re.compile(r"\[(\d+)\]")
 
 
 @dataclass
+class _Answered:
+    """An output check that already answered, in the shape the after-the-fact check reads (pass 2 J2-06)."""
+    res: Any
+
+    async def final(self) -> Any:
+        return self.res
+
+
+@dataclass
 class TurnSpec:
     speaker: str
     line: LineHint = field(default_factory=LineHint)
@@ -264,7 +273,9 @@ class TurnRunner:
                 if plan is not None:   # a planner that leaves retrieval alone (the scripted one): its rows only
                     spec.calls.extend(plan.calls)
                     spec.system1 = system1_section(spec.system1, plan.rows, seed=plan.seed)
-                got = await retrieve(rt, actor, sctx, spec.speaker, spec.prompt)   # M5 design D10: the speaker's scope
+                # M5 design D10: the speaker's scope. A regenerate searches the plain line (its marker is only for
+                # the scripted line's variety), so the message's query vector is reused and "again" is never searched
+                got = await retrieve(rt, actor, sctx, spec.speaker, spec.prompt.removesuffix(REGENERATE_SUFFIX))
                 spec.calls.extend(got.calls)
                 ctx = TurnContext(session=sctx, speaker=await speaker_view(rt, actor, row), message_id=mid, variant_id=vid,
                                   prompt=spec.prompt, line=spec.line, turn_index=actor.mode.turn,
@@ -277,6 +288,9 @@ class TurnRunner:
         except asyncio.CancelledError:
             if not info.started:   # cut before turn.start (clear() during the plan or the preamble): nothing to close
                 info.closed = True
+            raise
+        except Exception:
+            info.closed = True   # a turn that failed (a write into a deleted session) never keeps the actor generating
             raise
         finally:
             if planning is not None and not planning.done():   # D8: Stop during the plan leaves nothing running
@@ -472,13 +486,15 @@ class TurnRunner:
                 finally:
                     await agen.aclose()
         except ProviderError as e:
-            if not info.started:
+            if not info.started and e.code == "daily_budget_exceeded":   # the cap pause (D7) answers a cap refusal
                 await settle_timer()
                 info.closed = True
-                if e.code != "daily_budget_exceeded":  # the cap pause (D7) answers a cap refusal
-                    await actor.emit({"type": "error", "payload": {"code": e.code, "message": e.message,
-                                                                   "retryable": DEFAULT_RETRYABLE.get(e.code, True)}})
                 return TurnOutcome(None, "refused")
+            if not info.started:
+                # Failed before its first token (a 5xx, 429, the first-token timeout, an empty reply): the error goes on
+                # a row of its own and the turn ends, as a stream cut mid-way does. A bare session `error` ended
+                # nothing: "is thinking…" stayed up, Send stayed disabled and the error was never shown (pass 2 J2-01).
+                await self._start(actor, spec, info)
             err = e
         except asyncio.CancelledError:
             if timer is not None and not timer.cancelling():   # settle_timer may have cancelled it already
@@ -557,7 +573,9 @@ class TurnRunner:
                 status, scrub = "error", True
                 err = ProviderError("content_refused", "The reply was blocked by the safety check.")
         elif status == "interrupted" and ctx is not None and not verbatim and info.content.strip():
-            after = info.guard if info.guard is not None else self._start_guard(info, ctx, info.content)
+            # pass 2 J2-06: a Stop landing after the check answered reuses that answer (never paid twice, a block kept)
+            after = (_Answered(info.checked) if info.checked is not None else
+                     info.guard if info.guard is not None else self._start_guard(info, ctx, info.content))
         info.guard = None
         if checks:
             trace = {**trace, "guardrail": {**(trace.get("guardrail") or {}), "checks": checks}}
@@ -661,18 +679,19 @@ class TurnRunner:
         return status
 
     def _scrubber(self, actor: SessionActor, info: TurnInfo) -> Any:
-        """D13: the blocked reply's text leaves the stored token events and the message (same transaction)."""
+        """D13: the blocked reply's text leaves the stored token events and the message (same transaction). The
+        in-memory edit is made inside the transaction too (pass 2 J2-06): a cancel while waiting for the lock or mid-write
+        reloads the state, so memory never shows a scrub the rows don't have."""
         from sqlalchemy import and_, select, update
 
         from horizon.db import tables as t
 
-        msg = actor.state["messages"].get(info.message_id)
-        if msg is not None:
-            msg["content"] = ""
-            if info.variant_id and msg.get("variants"):
-                msg["variants"] = [{**v, "content": ""} if v["id"] == info.variant_id else v for v in msg["variants"]]
-
         async def scrub(tx: Any, _stamped: list[Wire]) -> None:
+            msg = actor.state["messages"].get(info.message_id)
+            if msg is not None:
+                msg["content"] = ""
+                if info.variant_id and msg.get("variants"):
+                    msg["variants"] = [{**v, "content": ""} if v["id"] == info.variant_id else v for v in msg["variants"]]
             E = t.session_events.c
             rows = (await tx.conn.execute(select(E.id, E.payload).where(and_(
                 E.session_id == actor.sid, E.message_id == info.message_id, E.type == "token")))).all()
@@ -718,6 +737,7 @@ class TurnRunner:
         info.guard = call
         res = await call.by(call.deadline())
         info.guard = None
+        info.checked = res   # pass 2 J2-06: a Stop after this point reads the answer instead of asking again
         return res
 
     async def _check_after(self, actor: SessionActor, info: TurnInfo, call: Any) -> None:

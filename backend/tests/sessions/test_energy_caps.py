@@ -156,3 +156,24 @@ async def test_budget_warning_inside_a_session(api: Api) -> None:
     assert any(g == {"type": "entity.changed", "kind": "usage"} for g in globals_)
     assert any(g.get("kind") == "session" and g.get("id") == sid for g in globals_)
     await assert_reduces(api, sid)
+
+
+
+async def test_a_refusal_caused_by_a_held_job_estimate_ends_with_the_hold(api: Api) -> None:
+    """Pass 2 J1-01: a reply refused only because a job's estimate was held kept every live session refused for the
+    rest of the day, after the job ended and released it. The block now lasts while that money is held."""
+    from horizon.gateway.context import call_ctx
+    from horizon.gateway.errors import ProviderError
+
+    await api.set_key()
+    rt, gw = api.rt, api.rt.gateway
+    spent, held = await gw.ledger.spent_today(), rt.book.total()
+    await gw.reserve_job(call_ctx("image_portrait", world_id="wld_seedMeridian", job_id="job_x"), 0.95 - spent - held)
+    try:
+        await gw._preflight(call_ctx("reply", world_id="wld_seedMeridian"), 0.06)
+        raise AssertionError("the reply should not fit while the job's estimate is held")
+    except ProviderError as e:
+        assert e.code == "daily_budget_exceeded"
+    assert await rt.sessions.cap_blocked()
+    rt.book.release_job("job_x")   # the job ends (cancelled, failed or cheaper): its hold goes
+    assert not await rt.sessions.cap_blocked()

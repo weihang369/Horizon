@@ -57,8 +57,12 @@ export function initialRuntime(session: Session, messages: Message[] = []): Sess
   const displayEmotion: Record<string, Emotion> = {};
   for (const p of session.participants) displayEmotion[p.characterId] = p.currentEmotion;
   const st = session.state;
+  // A snapshot taken mid-reply (a reload, a re-open) streams on: its Stop, Ctrl+. and speaking state come back with it
+  // (pass 2 J2-03). At most one message streams per session.
+  const streaming = messages.find((m) => m.status === "streaming");
   return {
     session,
+    ...(streaming ? { streamingId: streaming.id } : {}),
     messages: Object.fromEntries(messages.map((m) => [m.id, m])),
     order,
     displayEmotion,

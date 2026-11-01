@@ -15,7 +15,7 @@ import type {
 } from "../client/HorizonClient";
 import { chatCostUsd, round6 } from "../domain/cost";
 import {
-  canTopUp, energyDay, energyState, EST_REPLY_POINTS, fullAt, makeEnergy, pointsForCost, regenAt, settle, topUp, toWireEnergy, withMax,
+  canTopUp, energyDay, energyState, EST_REPLY_POINTS, fullAt, makeEnergy, pointsForCost, settle, topUp, toWireEnergy, withMax,
 } from "../domain/energy";
 import { MODELS } from "./pricing.config";
 import { pricePeriod, rushHourInfo } from "../domain/rushHour";
@@ -351,12 +351,13 @@ export class MockClient implements HorizonClient {
     s.spentTodayUsd = round6(before + costUsd);
     const cap = s.budget.dailyCapUsd;
     const warnAt = (cap * s.budget.warnAtPct) / 100;
-    if (before < warnAt && s.spentTodayUsd >= warnAt && s.spentTodayUsd < cap) {
+    // budget-caps "Warning on crossing": also when the same call crosses the cap (as the backend; pass 2 J1-03)
+    if (before < warnAt && s.spentTodayUsd >= warnAt) {
       this.global({ type: "budget.warning", scope: "daily", spentUsd: s.spentTodayUsd, capUsd: cap });
       if (sessionId) this.host.emit(sessionId, { type: "budget.warning", payload: { scope: "daily", spentUsd: s.spentTodayUsd, capUsd: cap } });
     }
     if (before < cap && s.spentTodayUsd >= cap) {
-      this.global({ type: "budget.reached", scope: "daily", spentUsd: s.spentTodayUsd, capUsd: cap, sessionId });
+      this.global({ type: "budget.reached", scope: "daily", spentUsd: s.spentTodayUsd, capUsd: cap, paused: true, sessionId });
       for (const live of this.lives.values()) {
         if (live.state.session.status !== "active") continue;
         clearLive(live, { keepCurrentTurn: true });
@@ -608,11 +609,13 @@ export class MockClient implements HorizonClient {
     return c;
   }
 
-  /** Read view: `energy.state` is derived at read time for the current price period (D-78), like the backend. */
+  /** Read view: `energy.state` is derived at read time for the current price period (D-78), like the backend. Outside
+   *  demo mode the read settles regen and the day roll (backend `read_energy`), so `current`, `fullAt`, `spentToday`
+   *  and `state` all describe the same moment. */
   private charView(c: Character): Character {
     const e = c.energy;
-    const current = this.db.settings.demoMode ? e.current : regenAt(e, this.sched.wallNow());
-    return { ...c, energy: { ...e, state: energyState(current, e.max, this.est().estReplyPoints) } };
+    if (this.db.settings.demoMode) return { ...c, energy: { ...e, state: energyState(e.current, e.max, this.est().estReplyPoints) } };
+    return { ...c, energy: settle(e, this.sched.wallNow(), this.est()) };
   }
 
   private touchChar(c: Character, bump = false): Character {
@@ -929,6 +932,7 @@ export class MockClient implements HorizonClient {
     // NFR-23: a character from another world is reported as missing, never as existing elsewhere.
     if (cast.some((c) => c.worldId !== w.id)) throw notFound("Character");
     if (cast.some((c) => c.status !== "approved")) throw invalid("Drafts and archived characters can't join sessions.");
+    if (new Set(input.characterIds).size !== input.characterIds.length) throw invalid("Each character can join a session once.", { field: "characterIds" });
     const min = input.mode === "one_on_one" ? 1 : 2;
     const max = input.mode === "one_on_one" ? 1 : 5;
     if (cast.length < min || cast.length > max) {
@@ -1087,7 +1091,7 @@ export class MockClient implements HorizonClient {
     lines.push("");
     const notes: string[] = [];
     for (const m of messages) {
-      const who = m.author.type === "user" ? (m.kind === "chat" ? "You" : "MODERATOR") : m.author.type === "character" ? name(m.author.characterId) : m.author.type === "host" ? "HOST" : "—";
+      const who = m.author.type === "user" ? (m.kind === "chat" ? "You" : m.kind === "direction" ? "DIRECTOR" : "MODERATOR") : m.author.type === "character" ? name(m.author.characterId) : m.author.type === "host" ? "HOST" : "—";
       lines.push(`**${who}**${m.emotion ? ` [${m.emotion}]` : ""}: ${footnoteCitations(m.content, m.citations, notes)}`, "");
     }
     const v = s.state && "verdict" in s.state ? s.state.verdict : undefined;
@@ -1109,7 +1113,10 @@ export class MockClient implements HorizonClient {
     }),
     stop: (sid) => this.command(() => this.stop(sid)),
     regenerate: (sid, messageId) => this.live(() => {
-      this.liveSession(sid);
+      const mode = this.liveSession(sid).state.session.mode;
+      // a debate argument or a scene line would come back as a chat reply (the backend refuses it too)
+      if (mode !== "one_on_one" && mode !== "group") throw conflict("Regenerate is only for 1:1 and group chat.");
+      if (this.liveSession(sid).state.messages[messageId]?.status === "streaming") throw conflict("A reply is still streaming.");
       oneEngine.regenerate(this.host, sid, messageId);
     }),
     setEmotion: (sid, cid, emotion) => this.command(() => {
@@ -1194,7 +1201,12 @@ export class MockClient implements HorizonClient {
     extendRound: (sid) => this.live(() => debateEngine.extendRound(this.host, sid)),
     skipToClosing: (sid) => this.command(() => debateEngine.skipToClosing(this.host, sid)),
     endDebate: (sid, withVerdict) => (withVerdict ? this.live(() => debateEngine.endDebate(this.host, sid, true)) : this.command(() => debateEngine.endDebate(this.host, sid, false))),
-    pickStrongerCase: (sid, side) => this.command(() => debateEngine.pickStrongerCase(this.host, sid, side)),
+    pickStrongerCase: (sid, side) => this.command(() => {
+      // You decide's pick belongs to the verdict phase (pass 2 J3-04): mid-debate it would end the debate at once
+      const st = this.liveSession(sid).state.session.state as { phase?: string } | undefined;
+      if (st?.phase !== "verdict") throw conflict("The pick comes at the verdict.");
+      debateEngine.pickStrongerCase(this.host, sid, side);
+    }),
   };
 
   watch: HorizonClient["watch"] = {

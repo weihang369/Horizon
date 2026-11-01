@@ -117,6 +117,7 @@ class RunEnv:
     store: ResponseStore | None
     run_dir: Path
     max_usd: float
+    refused: str | None = None   # the cap code of the last session create the run refused (`deep_timing.open_session`)
 
     async def spent(self) -> float:
         from sqlalchemy import func, select

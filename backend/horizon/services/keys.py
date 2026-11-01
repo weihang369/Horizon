@@ -14,9 +14,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
-import os
 import re
-import tempfile
 from collections.abc import Callable
 from pathlib import Path
 from typing import Literal
@@ -24,6 +22,7 @@ from typing import Literal
 from pydantic import SecretStr
 
 from horizon.api.errors import conflict, validation
+from horizon.storage.atomic import write_atomic
 
 log = logging.getLogger("horizon.keys")
 
@@ -39,17 +38,9 @@ def fingerprint(key: SecretStr) -> str:
 
 
 def write_json_atomic(path: Path, data: object) -> None:
-    """Write next to the target, then `os.replace` (atomic on Windows and POSIX when the target isn't held open)."""
-    path.parent.mkdir(parents=True, exist_ok=True)
-    fd, tmp = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
-    try:
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
-            f.write("\n")
-        os.replace(tmp, path)
-    except BaseException:
-        Path(tmp).unlink(missing_ok=True)
-        raise
+    """The shared atomic write (fsync, then a replace that retries while Windows holds the target open for a moment):
+    an antivirus scan of settings.local.json no longer fails the save (audit A-22)."""
+    write_atomic(path, (json.dumps(data, ensure_ascii=False, indent=2) + "\n").encode("utf-8"))
 
 
 class KeyStore:

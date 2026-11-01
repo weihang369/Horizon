@@ -195,6 +195,16 @@ def test_state_input_never_repeats_the_latest_line() -> None:
     assert inp.candidates[0].about_source.startswith("Calm under pressure")
 
 
+def test_state_input_leaves_system_notes_out() -> None:
+    """Audit B-06: an asleep note is no one's line; the group state already leaves it out."""
+    clock = FrozenClock(calendar_for("Asia/Kuala_Lumpur"), T0)
+    req = request(clock)
+    note = MessageView(id="m0", seq=0, author_type="system", name="system", kind="system_note",
+                       content="Amara is asleep (⚡ 0).")
+    req = req.model_copy(update={"session": req.session.model_copy(update={"recent": [note, *req.session.recent]})})
+    assert [r["text"] for r in plan_state_input(req).recent] == ["Long shift."]
+
+
 async def test_a_planner_bug_keeps_the_face_instead_of_failing_the_turn(monkeypatch: Any) -> None:
     planner, _, clock = make(jev_answer("sad", 0.9))
 

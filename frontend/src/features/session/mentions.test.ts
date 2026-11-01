@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { backspaceMention, filterCandidates, insertMention, mentionIds, mentionQueryAt, mentionSpans } from "./mentions";
+import { backspaceMention, filterCandidates, insertMention, mentionIds, mentionNames, mentionQueryAt, mentionSpans } from "./mentions";
 
 const cast = [{ id: "h", name: "Hana" }, { id: "t", name: "Takeshi" }, { id: "r", name: "Rin" }];
 
@@ -26,5 +26,17 @@ describe("mentions (O11)", () => {
     expect(backspaceMention("hey @Hana ", 10, cast)).toEqual({ text: "hey ", caret: 4 });
     expect(backspaceMention("hey @Hana", 9, cast)).toEqual({ text: "hey ", caret: 4 });
     expect(backspaceMention("hey Hana", 8, cast)).toBeNull();
+  });
+
+  it("names a colliding first name in full, so each one can be mentioned (pass 2 J3-10)", () => {
+    const people = [
+      { id: "a", full: "Mei Lin", first: "Mei" }, { id: "b", full: "Mei Tanaka", first: "Mei" }, { id: "c", full: "Rin Sato", first: "Rin" },
+    ];
+    const names = mentionNames(people);
+    expect(names.map((n) => n.name)).toEqual(["Mei Lin", "Mei Tanaka", "Rin"]);
+    expect(mentionIds("@Mei Tanaka what now? @Rin", names)).toEqual(["b", "c"]);
+    const twins = mentionNames([{ id: "x", full: "Ana Cruz", first: "Ana" }, { id: "y", full: "Ana Cruz", first: "Ana" }]);
+    expect(twins.map((n) => n.name)).toEqual(["Ana Cruz", "Ana Cruz 2"]);
+    expect(mentionIds("@Ana Cruz 2 hi", twins)).toEqual(["y"]);
   });
 });

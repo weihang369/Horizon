@@ -57,6 +57,8 @@ def initial_runtime(session: dict[str, Any], messages: Iterable[Msg] = ()) -> St
     }
     _put(s, "nextSpeakerId", st.get("nextSpeakerId") if st else None)
     _put(s, "pausedReason", session.get("pausedReason"))
+    # a snapshot taken mid-reply streams on (pass 2 J2-03, as the TS twin); at most one message streams per session
+    _put(s, "streamingId", next((m["id"] for m in msgs if m.get("status") == "streaming"), None))
     return s
 
 

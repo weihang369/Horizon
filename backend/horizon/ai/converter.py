@@ -181,6 +181,8 @@ class DoclingConverter:
         finally:
             await asyncio.shield(asyncio.to_thread(_reap, proc))
             await asyncio.to_thread(out.unlink, True)
+            # the worker writes `<out>.part` then renames it: a worker killed mid-write leaves that behind
+            await asyncio.to_thread(out.with_name(out.name + ".part").unlink, True)
 
     async def _next(self, lines: asyncio.Queue[str | None]) -> str | None:
         try:

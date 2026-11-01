@@ -233,3 +233,30 @@ def test_naive_gets_the_same_cue_as_its_last_message() -> None:
     req, _ = eng.request(ctx([mv(1, "user", "Saya selalu lupa minum air, macam mana ni?")], mode="one_on_one",
                              others=False))
     assert req.messages[-1] == {"role": "system", "content": "Kai wrote in Malay. Reply in Malay."}
+
+
+def test_the_user_bucket_is_the_turns_own_user_line() -> None:
+    """Audit B-04 (docs/ai/05 X7): an older user line in a watch or debate window is history, not the turn's `user`."""
+    from horizon.ai.naive.turn import turn_user_line
+
+    step_in = [mv(1, "user", "Hana, say something."), mv(2, "character", "Fine.", "chr_h", "Hana Morisaki")]
+    assert turn_user_line(ctx(step_in, mode="watch")) == ""
+    assert turn_user_line(ctx(step_in[:1], mode="watch")) == "Hana, say something."
+    assert turn_user_line(ctx(step_in, mode="debate")) == ""
+    assert turn_user_line(ctx(step_in, mode="group")) == "Hana, say something."   # a group reply still answers it
+
+
+def test_naive_trace_counts_both_cues_as_mode() -> None:
+    """Audit B-04: with a turn cue and a language cue, both trailing system messages are `mode`, neither is history."""
+    from horizon.ai.naive.prompt import TRAILING_CUE
+    from horizon.ai.naive.turn import NaiveTurnEngine
+
+    eng = NaiveTurnEngine(Deps(None))  # type: ignore[arg-type]
+    c = ctx([mv(1, "user", "Saya selalu lupa minum air, macam mana ni?"), mv(2, "character", "Minum.", "chr_a")])
+    req, prefix = eng.request(c)
+    cues = [m["content"] for m in req.messages[-2:]]
+    assert cues[0] == TRAILING_CUE and cues[1].endswith("Reply in Malay.")
+    used = eng.trace_patch(c, req, prefix, None, "", None, warm=False)["context"]["used"]
+    assert used["mode"] == count_tokens(cues[0]) + count_tokens(cues[1])
+    assert used["history"] == count_tokens("Minum.") + max(
+        0, count_tokens("Kai: Saya selalu lupa minum air, macam mana ni?") - used["user"])

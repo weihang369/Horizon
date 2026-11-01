@@ -22,6 +22,13 @@ const FILE_KINDS = {
 } as const;
 type FileKind = keyof typeof FILE_KINDS;
 const isFileKind = (x: string): x is FileKind => x in FILE_KINDS;
+const hasBytes = (hay: Uint8Array, needle: Uint8Array): boolean => {
+  outer: for (let i = 0; i + needle.length <= hay.length; i++) {
+    for (let j = 0; j < needle.length; j++) if (hay[i + j] !== needle[j]) continue outer;
+    return true;
+  }
+  return false;
+};
 
 /** Stage plan: [delay ms after the previous step, stage, pct]. ~2.4 s end to end at demo speed ×1. */
 const STAGES: [number, IngestProgress["stage"], number][] = [
@@ -94,12 +101,26 @@ export async function acceptInput(h: KnowledgeHost, characterId: string, input: 
     if (f.size > KNOWLEDGE_LIMITS.maxBytes) throw invalid("Files can be at most 10 MB.", { field: "file", limit: KNOWLEDGE_LIMITS.maxBytes, bytes: f.size });
     const bytes = new Uint8Array(await f.arrayBuffer());
     if (kind.magic && String.fromCharCode(...bytes.slice(0, kind.magic.length)) !== kind.magic) {
-      throw invalid(`This doesn't look like a real .${ext} file.`, { field: "file" });
+      throw invalid(`This doesn't look like a real .${ext} file.`, { field: "file", reason: "content_mismatch" });
+    }
+    // As the backend's `check_content` (J4-04): a .docx is a ZIP holding word/document.xml (a renamed spreadsheet is
+    // not), and Markdown or text is UTF-8 with no NUL (a renamed binary is not).
+    if (ext === "docx" && !hasBytes(bytes, new TextEncoder().encode("word/document.xml"))) {
+      throw invalid("This doesn't look like a real .docx file.", { field: "file", reason: "content_mismatch" });
+    }
+    let text = "";
+    if (ext !== "pdf" && ext !== "docx") {
+      try {
+        if (bytes.includes(0)) throw new Error("NUL");
+        text = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+      } catch {
+        throw invalid(`This .${ext} file isn't UTF-8 text.`, { field: "file", reason: "not_utf8" });
+      }
     }
     let prepared: Prepared;
     if (ext === "pdf" || ext === "docx") prepared = syntheticPassages(f.name, ext, f.size);
     else {
-      const read = paragraphs(new TextDecoder().decode(bytes));
+      const read = paragraphs(text);
       prepared = read.chunks.length ? read : { chunks: [], locator: "¶", error: "This file has no readable text." };
     }
     accepted = { title: f.name, type: "file", bytes: f.size, hash: contentHash(bytes), prepared };

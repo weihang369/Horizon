@@ -13,7 +13,7 @@ const job: GenerationJob = {
 const GLOBALS: Record<GlobalEvent["type"], GlobalEvent> = {
   "entity.changed": { type: "entity.changed", kind: "knowledge", id: "kno_a1", worldId: "wld_a1", progress: { stage: "chunking", pct: 0.4 } },
   "budget.warning": { type: "budget.warning", scope: "daily", spentUsd: 0.8, capUsd: 1 },
-  "budget.reached": { type: "budget.reached", scope: "creation", spentUsd: 0.6, capUsd: 0.6, jobId: "job_a1" },
+  "budget.reached": { type: "budget.reached", scope: "creation", spentUsd: 0.6, capUsd: 0.6, paused: false, jobId: "job_a1" },
   "job.progress": { type: "job.progress", job },
   "task.update": { type: "task.update", jobId: "job_a1", task },
   "job.done": { type: "job.done", job: { ...job, status: "succeeded", progress: 1 }, characterName: "Hana" },

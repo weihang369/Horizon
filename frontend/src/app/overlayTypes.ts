@@ -33,7 +33,7 @@ export interface OverlayProps {
   O18: Record<string, never>;
   O19: Record<string, never>;
   O20: Record<string, never>;
-  O21: { scope: "daily" | "creation"; spentUsd: number; capUsd: number; sessionId?: string };
+  O21: { scope: "daily" | "creation"; spentUsd: number; capUsd: number; paused?: boolean; sessionId?: string };
   O22: Record<string, never>;
   O23: { sessionId: string };
   O24: { sessionId: string; characterId: string; anchor?: AnchorRect };

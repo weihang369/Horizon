@@ -72,7 +72,7 @@ class PurgeWorker:
             await self._wake.wait()
             self._wake.clear()
             self.idle.clear()
-            failed = False
+            failed: list[int] = []   # the failures' attempt counts before this pass
             for row_id, scope, ids, attempts in await self._pending():
                 try:
                     await self._deliver(scope, ids)
@@ -80,12 +80,24 @@ class PurgeWorker:
                     log.exception("purge hook failed for %s %s (attempt %d)", scope, ids, attempts + 1)
                     async with self.db.write() as tx:
                         await tx.conn.execute(update(t.ai_purge_queue).where(Q.id == row_id).values(attempts=attempts + 1))
-                    failed = True
-                    await self.sleeper(BACKOFF_S[min(attempts, len(BACKOFF_S) - 1)])
-                    continue
+                    failed.append(attempts)
+                    continue  # audit 01-06: the backoff waits after the pass, so one failing row never holds up the rest
                 async with self.db.write() as tx:
                     await tx.conn.execute(update(t.ai_purge_queue).where(Q.id == row_id).values(done_at=self.now_iso()))
-            if failed:
-                self._wake.set()  # retry the failures on the next pass
-            else:
+            if not failed:
                 self.idle.set()
+                continue
+            await self._backoff(BACKOFF_S[min(min(failed), len(BACKOFF_S) - 1)])
+            self._wake.set()  # retry the failures on the next pass
+
+    async def _backoff(self, seconds: float) -> None:
+        """Wait out the backoff, or less: a new deletion's `notify()` starts the next pass at once."""
+        if self._wake.is_set():
+            return
+        pause = asyncio.ensure_future(self.sleeper(seconds))
+        woken = asyncio.ensure_future(self._wake.wait())
+        try:
+            await asyncio.wait((pause, woken), return_when=asyncio.FIRST_COMPLETED)
+        finally:
+            for f in (pause, woken):
+                f.cancel()

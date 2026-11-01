@@ -17,6 +17,8 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any
 
+import httpx
+
 from horizon.gateway.client import HttpCore
 from horizon.gateway.errors import ProviderError, malformed
 
@@ -29,6 +31,14 @@ class GenerationInfo:
     tokens_in: int | None
     tokens_out: int | None
     tokens_cached: int | None
+
+
+def _json(resp: httpx.Response, what: str) -> Any:
+    """A 200 that isn't JSON (a proxy's HTML page, a cut body) is a provider error, not a 500 (audit A-09)."""
+    try:
+        return resp.json()
+    except ValueError as e:
+        raise malformed(what, maybe_charged=False) from e
 
 
 def _data(obj: Any, what: str) -> Mapping[str, Any]:
@@ -49,7 +59,7 @@ class MetaClient:
 
     async def key_info(self) -> Mapping[str, Any]:
         resp = await self.core.request("GET", "/v1/key", http_timeout=self.timeout_s)
-        return _data(resp.json(), "key info")
+        return _data(_json(resp, "key info"), "key info")
 
     async def credits(self) -> float | None:
         try:
@@ -58,7 +68,7 @@ class MetaClient:
             if e.code in ("invalid_key", "missing_key"):
                 raise
             return None  # credits are a nice-to-have on testConnection
-        data = _data(resp.json(), "credits")
+        data = _data(_json(resp, "credits"), "credits")
         total, used = _num(data.get("total_credits")), _num(data.get("total_usage"))
         return round(total - used, 6) if total is not None and used is not None else None
 
@@ -69,7 +79,7 @@ class MetaClient:
             if e.status == 404:
                 return None
             raise
-        data = _data(resp.json(), "generation")
+        data = _data(_json(resp, "generation"), "generation")
         cost = _num(data.get("total_cost"))
         if cost is None:
             return None
@@ -85,7 +95,8 @@ class MetaClient:
 
     async def model_exists(self, model: str) -> bool:
         resp = await self.core.request("GET", "/v1/models", params={"output_modalities": "all"}, http_timeout=self.timeout_s)
-        data = resp.json().get("data") if isinstance(resp.json(), Mapping) else None
+        obj = _json(resp, "model list")
+        data = obj.get("data") if isinstance(obj, Mapping) else None
         if not isinstance(data, list):
             raise malformed("model list", maybe_charged=False)
         return any(isinstance(m, Mapping) and m.get("id") == model for m in data)

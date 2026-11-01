@@ -78,6 +78,12 @@ class FilePart:
     content_type: str | None
 
 
+def form_filename(name: str) -> str:
+    """A browser's multipart `filename` escapes `"` as `%22` and CR, LF as `%0D`, `%0A` (HTML form-data rules); undo
+    exactly those, so `My "notes".md` keeps its quotes as on the mock (pass 2 J4-07). A line break becomes a space."""
+    return name.replace("%22", '"').replace("%0D", " ").replace("%0A", " ")
+
+
 async def stream_file_part(request: Request, *, limit: int, write: Callable[[bytes], object], err: HorizonHTTPError,
                            what: str = "file") -> FilePart:
     """Parse a `multipart/form-data` body as it arrives, passing the `file` part's bytes to `write` and counting them
@@ -109,7 +115,7 @@ async def stream_file_part(request: Request, *, limit: int, write: Callable[[byt
         state["name"] = opts.get(b"name")
         if state["name"] == b"file":
             fn = opts.get(b"filename")
-            state["filename"] = fn.decode("utf-8", "replace") if fn else None
+            state["filename"] = form_filename(fn.decode("utf-8", "replace")) if fn else None
             ct = state["headers"].get(b"content-type")
             state["ctype"] = ct.decode("latin-1") if ct else None
         state["headers"] = {}

@@ -77,6 +77,11 @@ describe("HttpClient", () => {
     expect(((await c.worlds.list().catch((x: unknown) => x)) as HorizonError).code).toBe("timeout");
   });
 
+  it("an empty 502 from the dev proxy (backend restarting) is a network error, not a provider failure (J6-05)", async () => {
+    const { c } = make(() => new Response("", { status: 502 }));
+    expect(((await c.worlds.list().catch((x: unknown) => x)) as HorizonError).code).toBe("network");
+  });
+
   it("every POST carries a fresh Idempotency-Key, and the network retry reuses it", async () => {
     let n = 0;
     const { c, calls } = make(() => {
@@ -365,6 +370,14 @@ describe("HttpClient", () => {
     const form = init?.body as FormData;
     expect(form).toBeInstanceOf(FormData);
     expect((form.get("file") as File).name).toBe("cover.png");
+  });
+
+  it("worlds.update: a cleared `you` (present, undefined) goes as null, so the backend removes the card", async () => {
+    const { c, calls } = make(() => json(200, { id: "wld_a" }));
+    await c.worlds.update("wld_a", { name: "A", cover: { kind: "preset" }, you: undefined });
+    await c.worlds.update("wld_a", { name: "B" });
+    expect(JSON.parse(String(calls[0].init?.body))).toEqual({ name: "A", cover: { kind: "preset" }, you: null });
+    expect(JSON.parse(String(calls[1].init?.body))).toEqual({ name: "B" });   // no `you` key: the card is left alone
   });
 
   it("M4: jobs.start is one POST /jobs; subscribe gets its task.update and job.done from the global stream", async () => {

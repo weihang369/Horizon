@@ -146,7 +146,7 @@ def summary_sets(labels: dict[str, Any], run: Path) -> dict[str, list[dict[str, 
 
 # ── drafter judges ──
 def you_card(world: str) -> str:
-    w = json.loads((ROOT / "seed" / "worlds" / f"{world}.json").read_text(encoding="utf-8"))
+    w = json.loads((ROOT / "evals" / "seed-v0" / "worlds" / f"{world}.json").read_text(encoding="utf-8"))
     return json.dumps(w["data"].get("you") or {}, ensure_ascii=False)
 
 

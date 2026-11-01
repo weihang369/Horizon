@@ -79,6 +79,22 @@ async def test_second_lookup_changes_nothing(api: Api) -> None:
 
 
 @respx.mock
+async def test_a_correction_announces_the_usage_change(api: Api) -> None:
+    """Audit A-07: the Spend view and spentTodayUsd refresh on `entity.changed {kind: usage}`; a correction sent none,
+    so they showed the estimate until the next paid call."""
+    gw = build_gateway(api)
+    await stopped_stream(api, gw, estimate=0.0006)
+    seen: list[dict[str, Any]] = []
+    api.rt.db.set_publisher(lambda _channel, ev: seen.append(ev))
+    try:
+        assert await corrector(api, gw).apply(await the_row(api), GenerationInfo("gen-rec-000001", 0.00041, None, None,
+                                                                                None, None))
+    finally:
+        api.rt.db.set_publisher(api.rt.publish)
+    assert {"type": "entity.changed", "kind": "usage"} in seen
+
+
+@respx.mock
 async def test_404_404_200_corrects_on_the_third_try(api: Api) -> None:
     queued: list[str] = []
     gw = build_gateway(api, on_estimate_row=queued.append)

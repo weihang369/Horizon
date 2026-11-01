@@ -10,7 +10,7 @@ from horizon.ai.scripted.bank import first_name
 from horizon.domain import vclock
 from horizon.domain.ids import new_id
 from horizon.sessions.after_turn import on_user_message
-from horizon.sessions.context import characters
+from horizon.sessions.context import MUTED_SUFFIX, characters
 from horizon.sessions.turn import TurnOutcome, TurnRunner, TurnSpec
 
 if TYPE_CHECKING:
@@ -58,11 +58,25 @@ async def asleep_note(actor: SessionActor, character_id: str, *, skipping: bool,
     (M11, debate design D3), so the slot cursor can read them from the log."""
     name = await name_of(actor, character_id)
     energy = await runner(actor).energy_now(character_id)
+    if energy is None and not skipping:   # pass 2 J3-08: deleted, not asleep, so no Top up (the skip note's wording
+        #                                   stays: the debate's slot cursor counts it)
+        await actor.emit(message_event(note(actor, f"{name} has left.", targetCharacterId=character_id, debate=debate)))
+        return
     current = int(energy["current"]) if energy else 0
     text = f"{name} is asleep, skipping." if skipping else f"{name} is asleep (⚡ {current})."
     msg = note(actor, text, targetCharacterId=character_id, debate=debate)
     await actor.emit(message_event(msg), {"type": "error", "payload": {
         "code": "energy_exhausted", "message": f"{name} is asleep (⚡ 0).", "retryable": False, "messageId": msg["id"]}})
+
+
+async def muted_mentions(actor: SessionActor, mentions: list[str]) -> list[str]:
+    """Pass 2 J3-11 (the user's choice: mute wins): a muted character never speaks, even when @mentioned. Each muted
+    mention gets "{name} is muted." and is dropped; the rest are returned."""
+    muted = {p["characterId"] for p in actor.session["participants"] if p.get("mutedByUser")}
+    for m in mentions:
+        if m in muted:
+            await actor.emit(message_event(note(actor, f"{await name_of(actor, m)}{MUTED_SUFFIX}", targetCharacterId=m)))
+    return [m for m in mentions if m not in muted]
 
 
 async def speak_then(actor: SessionActor, spec: TurnSpec, *, prefetch: Any = None) -> TurnOutcome:

@@ -422,12 +422,15 @@ def _usage_row(u: Wire, rows: SeedRows | None, local_day: Callable[[str], str]) 
     return {**full, "at": at, "local_day": local_day(at), "is_seed": True}
 
 
-def install_knowledge_files(data: SeedData, knowledge_dir: Path) -> None:
+def install_knowledge_files(data: SeedData, knowledge_dir: Path, only: set[str] | None = None) -> None:
     """D-110: each shipped document's stored files (its original, `extracted.md`) in its folder, where an upload leaves
-    them, so a continued demo can show, re-chunk or re-embed it like any upload. Run after `apply_seed` commits."""
+    them, so a continued demo can show, re-chunk or re-embed it like any upload. Run after `apply_seed` commits.
+    `only`: just these source ids (the ones still in the database)."""
     if data.rows is None or data.rows.files_dir is None:
         return
     for k in data.knowledge:
+        if only is not None and k["id"] not in only:
+            continue
         stored = data.rows.knowledge.get(k["id"])
         if not stored or not stored["files"]:
             continue

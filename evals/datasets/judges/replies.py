@@ -24,7 +24,7 @@ REPLY_JUDGES = ("judge_assistant_voice", "judge_flattery", "judge_language", "ju
 
 def profiles(root: Path) -> dict[str, dict[str, Any]]:
     out = {}
-    for p in sorted((root / "seed" / "characters").glob("*.json")):
+    for p in sorted((root / "evals" / "seed-v0" / "characters").glob("*.json")):
         d = json.loads(p.read_text(encoding="utf-8"))["data"]
         out[d["id"]] = d["profile"]
     return out
@@ -32,7 +32,7 @@ def profiles(root: Path) -> dict[str, dict[str, Any]]:
 
 def worlds(root: Path) -> dict[str, str]:
     return {d["id"]: d["worldId"] for d in (json.loads(p.read_text(encoding="utf-8"))["data"]
-                                           for p in sorted((root / "seed" / "characters").glob("*.json")))}
+                                           for p in sorted((root / "evals" / "seed-v0" / "characters").glob("*.json")))}
 
 
 def turns_of(root: Path, src: dict[str, Any]) -> list[dict[str, Any]]:

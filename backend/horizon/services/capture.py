@@ -6,7 +6,7 @@ frozen `TurnContext` and the routing/Decider fallback flags) land in `ai_calls`,
 
 **Never on the hot path:** the gateway hook appends a dict to a bounded deque (2,000) and returns. A writer task
 (`rt.spawn("capture")`) flushes every 2 s of clock time, or as soon as 200 rows wait, in one writer transaction.
-Overflow drops the oldest row; the count goes into the next stored row's `dropped_before`. Off (the default): the hook
+A full queue refuses new rows; the count goes into the next stored row's `dropped_before`. Off (the default): the hook
 is never installed and no body is ever built.
 
 **Retention:** at start-up and every hour of clock time, rows older than 7 days go, then all but the newest 20,000.
@@ -28,7 +28,7 @@ import logging
 from collections.abc import Callable, Mapping, Sequence
 from typing import Any
 
-from sqlalchemy import and_, delete, func, insert, or_, select
+from sqlalchemy import and_, delete, func, insert, or_, select, update
 
 from horizon.db import tables as t
 from horizon.db.uow import Database
@@ -64,6 +64,7 @@ class Capture:
         self._kicked = False
         self._unlinked: dict[str, list[str]] = {}   # session → turn-level call rows waiting for their turn
         self._consumed: dict[str, bool] = {}
+        self._links: dict[str, str] = {}             # call row → message, for rows already flushed when the turn ended
 
     # ── producers (cheap: build a dict, append, return) ──
     def _push(self, row: dict[str, Any]) -> bool:
@@ -120,9 +121,15 @@ class Capture:
             return
         linked = list(self._unlinked.get(session_id, []))
         self._consumed[session_id] = True
+        queued = set()
         for r in self.queue:                   # still queued: give them the message they served
-            if r["id"] in linked and r["message_id"] is None:
-                r["message_id"] = message_id
+            if r["id"] in linked:
+                queued.add(r["id"])
+                if r["message_id"] is None:
+                    r["message_id"] = message_id
+        for row_id in linked:                  # already flushed (a turn over 2 s): the next flush links them (audit A-06)
+            if row_id not in queued:
+                self._links[row_id] = message_id
         self._push({"id": new_id("aic"), "kind": "turn", "created_at": self.now_iso(), "purpose": "turn",
                     "category": None, "model": None, "provider": None, "latency_ms": None, "cost_usd": None,
                     "finish_reason": None, "error_code": None, "usage_record_id": None, "world_id": world_id,
@@ -159,6 +166,7 @@ class Capture:
             self.queue.clear()
             if not rows:
                 return 0
+            links, self._links = self._links, {}
             async with self._db().write() as tx:
                 # FKs: a row whose session or world is already gone is skipped, not an error
                 sids = {r["session_id"] for r in rows if r["session_id"]}
@@ -171,6 +179,9 @@ class Capture:
                         and (not r["world_id"] or r["world_id"] in live_w)]
                 if keep:
                     await tx.conn.execute(insert(t.ai_calls), keep)
+                for row_id, message_id in links.items():   # so deleting the message deletes them too
+                    await tx.conn.execute(update(t.ai_calls).where(C.id == row_id, C.message_id.is_(None))
+                                          .values(message_id=message_id))
             return len(keep)
 
     async def retention(self) -> int:

@@ -86,3 +86,33 @@ def test_unreadable_file_is_ignored_without_logging_it(tmp_path: Path, caplog: p
         ks, _ = store(tmp_path)
     assert ks.status() == "missing"
     assert "sk-or-test" not in caplog.text
+
+
+def test_saving_survives_a_target_held_open_for_a_moment(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Audit A-22: on Windows an antivirus scan can hold the file open; the save retried nothing and failed with a 500.
+    It now shares storage.atomic's write: retries the replace, and leaves no temp file when it gives up."""
+    import os
+
+    from horizon.storage import atomic
+
+    real, fails = os.replace, [1]
+
+    def busy_once(src: object, dst: object) -> None:
+        if fails:
+            fails.pop()
+            raise PermissionError("held open")
+        real(src, dst)   # type: ignore[arg-type]
+
+    monkeypatch.setattr(atomic.os, "replace", busy_once)
+    ks, _ = store(tmp_path)
+    ks.set_key("sk-or-test-0001")
+    assert json.loads(ks.path.read_text(encoding="utf-8")) == {"openRouterKey": "sk-or-test-0001"}
+
+    def always_busy(src: object, dst: object) -> None:
+        raise PermissionError("held open")
+
+    monkeypatch.setattr(atomic.os, "replace", always_busy)
+    monkeypatch.setattr(atomic, "REPLACE_DELAY_S", 0.0)
+    with pytest.raises(PermissionError):
+        ks.set_key("sk-or-test-0002")
+    assert sorted(p.name for p in tmp_path.iterdir()) == ["secrets.local.json"]

@@ -15,7 +15,7 @@ import { cx } from "@/ui/cx";
 import { useAssetCompareWatcher } from "@/features/profile/compare";
 import { ActionBar } from "../ActionBar";
 import { useWizard } from "../context";
-import { cancelJob, isRunning, retryJobTask, startGeneration, useEstimate } from "../generate";
+import { cancelJob, isRunning, retryJobTask, startGeneration, useEstimate, useJobWait } from "../generate";
 import { gateFrom, laterStep } from "../gates";
 import s from "./steps.module.css";
 
@@ -39,6 +39,7 @@ export function EmotionsStep() {
   const est = useEstimate(c ? { characterId: c.id, kind: "emotion_set", technique: "per_emotion" } : null);
   const estOne = useEstimate(c ? { characterId: c.id, kind: "emotion_regenerate", emotions: ["surprised"] } : null);
   const running = isRunning(setJob);
+  const wait = useJobWait(c?.id);
 
   const slots = useMemo(() => {
     const out = {} as Record<Emotion, SlotState>;
@@ -122,14 +123,15 @@ export function EmotionsStep() {
                 onGenerate={() => generateOne(e)}
                 onRetry={(job, task) => void retryJobTask(job.id, task.id)}
                 estOne={estOne}
+                wait={wait}
               />
             ))}
           </div>
         </div>
       </section>
-      <ActionBar note={!gate.ok ? <span className={s.gateNote}>{gate.reason}</span> : undefined}>
+      <ActionBar note={!gate.ok ? <span className={s.gateNote}>{gate.reason}</span> : wait && !running ? <span className={s.gateNote}>{wait}</span> : undefined}>
         {!running && doneCount < 6 && (
-          <Button variant={gate.ok ? "secondary" : "primary"} size={gate.ok ? "md" : "lg"} cost={est ?? undefined} disabled={!c.appearance.basePortraitUrl} onClick={generateSet}>
+          <Button variant={gate.ok ? "secondary" : "primary"} size={gate.ok ? "md" : "lg"} cost={est ?? undefined} disabled={!c.appearance.basePortraitUrl || !!wait} title={wait ?? undefined} onClick={generateSet}>
             {doneCount ? "Generate set again ▸" : "Generate emotions ▸"}
           </Button>
         )}
@@ -140,9 +142,9 @@ export function EmotionsStep() {
   );
 }
 
-function EmotionSlot({ e, st, base, index = 0, onOpen, onGenerate, onRetry, estOne }: {
+function EmotionSlot({ e, st, base, index = 0, onOpen, onGenerate, onRetry, estOne, wait }: {
   e: Emotion; st: SlotState | undefined; base?: boolean; index?: number; onOpen: () => void; onGenerate?: () => void;
-  onRetry?: (job: GenerationJob, task: GenerationTask) => void; estOne?: number | null;
+  onRetry?: (job: GenerationJob, task: GenerationTask) => void; estOne?: number | null; wait?: string | null;
 }) {
   const meta = emotionMeta[e];
   const status = st?.status ?? "later";
@@ -169,7 +171,7 @@ function EmotionSlot({ e, st, base, index = 0, onOpen, onGenerate, onRetry, estO
         {base && <Tape tone="brand" size="sm">Base</Tape>}
       </div>
       {status === "later" && onGenerate && (
-        <button type="button" className={s.slotAction} onClick={onGenerate}>Generate{estOne ? <span className="hz-cost-estimate">{` (≈ $${estOne.toFixed(2)})`}</span> : null}</button>
+        <button type="button" className={s.slotAction} disabled={!!wait} title={wait ?? undefined} onClick={onGenerate}>Generate{estOne ? <span className="hz-cost-estimate">{` (≈ $${estOne.toFixed(2)})`}</span> : null}</button>
       )}
       {status === "failed" && st?.job && st.task && onRetry && (
         <button type="button" className={cx(s.slotAction, s.slotRetry)} onClick={() => onRetry(st.job!, st.task!)}>↻ Retry</button>

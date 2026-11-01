@@ -20,7 +20,7 @@ export function openOverlay<Id extends OverlayId>(id: Id, ...[props]: PropsArg<I
   const kind = OVERLAY_KINDS[id];
   if (kind === "dock") {
     const p = props as OverlayProps["O12"];
-    ui.setState({ dockExpansion: { sessionId: p.sessionId, kind: p.kind, characterId: p.characterId } });
+    ui.setState({ dockExpansion: { sessionId: p.sessionId, kind: p.kind, characterId: p.characterId, order: nextKey++ } });
     return 0;
   }
   const s = ui.getState();
@@ -37,7 +37,8 @@ export function openOverlay<Id extends OverlayId>(id: Id, ...[props]: PropsArg<I
   return layer.key;
 }
 
-/** Close by overlay id or layer key. Focus returns to where it was when the layer opened. */
+/** Close by overlay id or layer key. Focus returns to where it was when the layer opened; for a drawer only when focus was
+ * inside it, so closing Insight never pulls focus out of the composer (audit E-15.1). */
 export function closeOverlay(idOrKey: OverlayId | number): void {
   if (idOrKey === "O12") {
     ui.setState({ dockExpansion: null });
@@ -46,9 +47,11 @@ export function closeOverlay(idOrKey: OverlayId | number): void {
   const s = ui.getState();
   const layer = s.layers.find((l) => (typeof idOrKey === "number" ? l.key === idOrKey : l.id === idOrKey));
   if (!layer) return;
+  const inside = layer.kind === "drawer" && typeof document !== "undefined"
+    && !!document.querySelector(`[data-layer="${layer.id}"]`)?.contains(document.activeElement);
   ui.setState({ layers: s.layers.filter((l) => l !== layer) });
   const back = layer.returnFocusTo;
-  if (back && back.isConnected && (layer.kind === "modal" || layer.kind === "popover")) queueMicrotask(() => back.focus({ preventScroll: true }));
+  if (back && back.isConnected && (layer.kind === "modal" || layer.kind === "popover" || inside)) queueMicrotask(() => back.focus({ preventScroll: true }));
 }
 
 export function isOverlayOpen(id: OverlayId): boolean {

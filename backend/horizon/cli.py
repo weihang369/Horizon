@@ -64,9 +64,23 @@ def _uvicorn(host: str, port: int) -> None:
     uvicorn.run("horizon.main:create_app", factory=True, host=host, port=port, log_config=None, access_log=False)
 
 
+def _serving(cmd: str) -> bool:
+    """Audit A-04: like `horizon space build`, a command that writes to data/ refuses while a backend holds it (a reset
+    would wipe or re-seed files under the running server)."""
+    from horizon.storage.datalock import held_elsewhere
+
+    cfg = load_config()
+    if not held_elsewhere(cfg.data_dir):
+        return False
+    print(f"horizon: a backend is running on {cfg.data_dir}. Stop it, then run `horizon {cmd}` again.", file=sys.stderr)
+    return True
+
+
 def _migrate(_args: argparse.Namespace) -> int:
     from horizon.db.migrate import upgrade_head
 
+    if _serving("migrate"):
+        return 2
     cfg = load_config()
     upgrade_head(cfg.db_path)
     print(f"horizon: {cfg.db_path} is at head")
@@ -90,17 +104,21 @@ def _with_runtime(action: str) -> int:
 
 
 def _seed(_args: argparse.Namespace) -> int:
+    if _serving("seed"):
+        return 2
     rc = _with_runtime("seed")
     print("horizon: seed present")
     return rc
 
 
 def _reset(args: argparse.Namespace) -> int:
+    if args.factory and not args.yes:
+        print("horizon: factory reset deletes everything in data/ except models/. Re-run with --yes to confirm.",
+              file=sys.stderr)
+        return 2
+    if _serving("reset --factory --yes" if args.factory else "reset"):
+        return 2
     if args.factory:
-        if not args.yes:
-            print("horizon: factory reset deletes everything in data/ except models/. Re-run with --yes to confirm.",
-                  file=sys.stderr)
-            return 2
         from horizon.runtime import wipe_data_dir
 
         cfg = load_config()

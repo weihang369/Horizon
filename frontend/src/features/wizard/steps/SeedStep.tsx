@@ -38,13 +38,16 @@ export function SeedStep() {
     return () => clearInterval(t);
   }, []);
 
+  const starting = useRef(false);
   const start = async () => {
     const text = seed.trim();
-    if (!text) return;
+    // Enter twice (or held) while the first draft is on its way made and billed a second one (pass 2 J5-05)
+    if (!text || starting.current) return;
     if (settings && settings.openRouterKeyStatus !== "set") {
       openOverlay("O05", { reason: "Drafting with AI needs your OpenRouter key." });
       return;
     }
+    starting.current = true;
     setBusy(true);
     try {
       const { character, job } = await client.characters.createDraft(worldId, { seedPrompt: text, intent: intent ?? "other" });
@@ -53,6 +56,7 @@ export function SeedStep() {
       navigate({ name: "wizard", worldId, characterId: character.id, step: "profile" }, { replace: true, transition: "none", force: true });
     } catch (err) {
       reportError(err, { context: "Drafting with AI needs your OpenRouter key." });
+      starting.current = false;
       setBusy(false);
     }
   };

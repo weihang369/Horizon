@@ -46,6 +46,27 @@ def test_factory_reset_needs_yes(tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     assert marker.exists()
 
 
+@pytest.mark.parametrize("argv", [["reset", "--factory", "--yes"], ["reset"], ["seed"], ["migrate"]])
+def test_data_commands_refuse_while_a_backend_holds_data(argv: list[str], tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+                                                         capsys: pytest.CaptureFixture[str]) -> None:
+    """Audit A-04: a reset under a running backend wiped or re-seeded its files; now it refuses, as space build does."""
+    from horizon.storage.datalock import DataLock
+
+    data = tmp_path / "data"
+    monkeypatch.setenv("HORIZON_DATA_DIR", str(data))
+    data.mkdir()
+    marker = data / "keep.txt"
+    marker.write_text("x")
+    held = DataLock(data)
+    assert held.acquire()   # the running backend
+    try:
+        assert cli.main(argv) == 2
+    finally:
+        held.release()
+    assert marker.exists() and not (data / "horizon.db").exists()
+    assert "a backend is running" in capsys.readouterr().err
+
+
 def test_export_schema_check_passes() -> None:
     assert cli.main(["export-schema", "--check"]) == 0
 

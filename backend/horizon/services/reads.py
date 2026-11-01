@@ -172,8 +172,9 @@ async def character_memory(conn: AsyncConnection, character_id: str) -> list[Wir
 async def _cited_counts(conn: AsyncConnection, source_ids: Sequence[str]) -> dict[str, int]:
     if not source_ids:
         return {}
-    mc = t.message_citations.c
-    rows = (await conn.execute(select(mc.source_id, func.count()).where(mc.source_id.in_(source_ids)).group_by(mc.source_id))).all()
+    mc = t.message_citations.c   # "Cited N×" counts replies, not markers: a reply citing two passages adds 1 (C-P1-3)
+    rows = (await conn.execute(select(mc.source_id, func.count(func.distinct(mc.message_id)))
+                               .where(mc.source_id.in_(source_ids)).group_by(mc.source_id))).all()
     return {r[0]: int(r[1]) for r in rows}
 
 

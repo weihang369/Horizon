@@ -77,8 +77,8 @@ The gateway SHALL apply these default timeouts, all overridable by config:
 | Decision `route` | 400 ms |
 | Decision `turn_plan` | 700 ms |
 | Decision `follow_plan` | 400 ms |
-| Decision `debate_plan` | 500 ms |
-| Decision `guardrail` | 700 ms |
+| Decision `debate_plan` | 735 ms |
+| Decision `guardrail` | 800 ms |
 | Decision `guardrail_prompt` | 1,500 ms |
 | Decision `reaction` | 1,500 ms |
 | Decision `face_check` | 1,500 ms |
@@ -288,7 +288,7 @@ A debate plan SHALL carry purpose `debate_plan` in ledger category `decision`; a
 - **THEN** its ledger has `debate_plan` rows in category `decision`, one `rubric` row in `decision`, `host` rows and one `verdict` row in `chat`, and no character's energy moved for any of them
 
 ### Requirement: Debate deadlines and limits
-`timeoutsMs.decision.debate_plan` (500 by default) SHALL be a deadline counted from `turn.end`. `timeoutsMs.decision.rubric` SHALL be 10,000, and a 429 on a rubric request SHALL be retried once after 1 s inside it. `timeoutsMs.verdict` SHALL be 30,000, the whole verdict prose call's limit. The mock's price table SHALL carry the same values.
+`timeoutsMs.decision.debate_plan` (735 by default) SHALL be a deadline counted from `turn.end`. `timeoutsMs.decision.rubric` SHALL be 10,000, and a 429 on a rubric request SHALL be retried once inside it, after its Retry-After (at least 1 s, at most 5 s). `timeoutsMs.verdict` SHALL be 30,000, the whole verdict prose call's limit. The mock's price table SHALL carry the same values.
 
 #### Scenario: A rubric 429
 - **WHEN** the first rubric request gets a 429

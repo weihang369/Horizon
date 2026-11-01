@@ -29,6 +29,10 @@ export interface MessageRowProps {
   selected: boolean;
   /** Offer ↻ (last character message of a live 1:1 / group session). */
   canRegenerate: boolean;
+  /** A 1:1 or group session: an interrupted reply offers Regenerate (CHAT-02 AC3; one chip, audit D-11). Regenerate is a chat
+   * command, so a cut debate argument or scene line offers neither (audit D-11). False too while a turn runs, so a click
+   * never queues a second paid reply behind it (pass 2 J2-02). */
+  chat?: boolean;
   /** Row appeared after mount (animate in). */
   fresh: boolean;
   /** Show the full actions row (copy, insight). */
@@ -95,15 +99,17 @@ const KIND_TAPE: Partial<Record<Message["kind"], string>> = {
   verdict: "Verdict",
 };
 
-function ErrorActions({ m, char }: { m: Message; char?: Character }) {
+function ErrorActions({ m, char, chat }: { m: Message; char?: Character; chat: boolean }) {
   const ctx = useSessionCtx();
   const live = ctx && !ctx.replay;
   if (!m.error || !live) return null;
   const sid = m.sessionId;
   const regen = () => void run(() => client.chat.regenerate(sid, m.id));
   if (m.error.code === "energy_exhausted") return null;
-  // A cut stream offers Continue · Regenerate on the row itself (STATE-03), so the tape carries no second button.
-  const label = m.status === "interrupted" ? null : m.error.code === "content_refused" ? "Regenerate" : m.error.retryable ? "Retry" : null;
+  // A cut stream offers Regenerate on the row itself (STATE-03), so the tape carries no second button.
+  // Retry and Regenerate redo a chat reply: a debate or watch turn moves on instead (Regenerate is 1:1 and group only).
+  const label = !chat || m.status === "interrupted" ? null
+    : m.error.code === "content_refused" ? "Regenerate" : m.error.retryable ? "Retry" : null;
   return (
     <div className={s.errRow} role="alert">
       <Tape tone="error" size="sm">Warning</Tape>
@@ -172,7 +178,7 @@ function Reactions({ m, chars }: { m: Message; chars: Record<string, Character> 
   );
 }
 
-function MessageRowImpl({ m, chars, variant, selected, canRegenerate, fresh, onOpenInsight, stale }: MessageRowProps) {
+function MessageRowImpl({ m, chars, variant, selected, canRegenerate, chat = false, fresh, onOpenInsight, stale }: MessageRowProps) {
   const ctx = useSessionCtx();
   const { name, char } = authorLabel(m, chars);
   const streaming = m.status === "streaming";
@@ -241,7 +247,7 @@ function MessageRowImpl({ m, chars, variant, selected, canRegenerate, fresh, onO
       ? <span className={s.stopped}>(stopped)</span>
       : <span className={s.interrupted}>(interrupted)</span>
     : null;
-  const cutActions = m.status === "interrupted" && m.interruptedBy !== "user" && ctx && !ctx.replay && isChar;
+  const cutActions = chat && m.status === "interrupted" && m.interruptedBy !== "user" && ctx && !ctx.replay && isChar;
 
   if (variant === "script") {
     return (
@@ -318,7 +324,7 @@ function MessageRowImpl({ m, chars, variant, selected, canRegenerate, fresh, onO
         })()}
         {cites && <SourcesStrip cites={cites} characterId={m.author.characterId} compact={!readable} />}
         {streaming && <span className="sr-only">{name} is typing</span>}
-        {m.error && <ErrorActions m={m} char={char} />}
+        {m.error && <ErrorActions m={m} char={char} chat={chat} />}
         {(isChar || isUser) && !streaming && (
           <div className={s.meta}>
             {isChar && <Reactions m={m} chars={chars} />}
@@ -332,8 +338,7 @@ function MessageRowImpl({ m, chars, variant, selected, canRegenerate, fresh, onO
             )}
             {cutActions && (
               <span className={s.cutActions}>
-                <button type="button" className={cx(s.chipBtn, s.chipPrimary)} onClick={(e) => { e.stopPropagation(); regen(); }}>Continue</button>
-                <button type="button" className={s.chipBtn} onClick={(e) => { e.stopPropagation(); regen(); }}>Regenerate</button>
+                <button type="button" className={cx(s.chipBtn, s.chipPrimary)} onClick={(e) => { e.stopPropagation(); regen(); }}>Regenerate</button>
               </span>
             )}
             <span className={s.actions}>

@@ -58,7 +58,7 @@ A numbered migration SHALL add:
 - `usage_records.finish_reason` (text, nullable) and `usage_records.tokens_reasoning` (integer, nullable);
 - the `ai_calls` table, with indexes on `created_at`, `character_id`, `session_id` and `message_id`. Its world and session references SHALL cascade on delete, and its character and message references SHALL have no foreign key.
 
-Existing rows SHALL read `NULL` in the new columns. Like every Horizon migration, it SHALL be forward-only: rollback is a copy of `data/`.
+Existing rows SHALL read `NULL` in the new columns. Like every Horizon migration, it SHALL be applied forward at start-up; rollback is a copy of `data/` (some migrations also have a `downgrade()` for development, never run by the app).
 
 #### Scenario: Upgrade an M6 database
 - **WHEN** a database at the previous migration is upgraded

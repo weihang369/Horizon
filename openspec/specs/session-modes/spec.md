@@ -7,7 +7,7 @@ Defines what each session command does in each mode (1:1, group, debate and watc
 ## Requirements
 
 ### Requirement: 1:1 conversation
-In a 1:1 session, `chat.send` SHALL post the user's message and queue one reply from the single participant. `chat.regenerate(messageId)` SHALL stream a new variant into the same message, keeping earlier variants (D-58: "Continue" means regenerate). Sending to a paused 1:1 session SHALL resume it first (`session.resumed`), unless it is paused by the daily cap and the cap is still reached. Under the `agent` profile in M9, a 1:1 turn SHALL retrieve no knowledge and no memories, and a sent message SHALL start no query embedding, until the plan's gates exist.
+In a 1:1 session, `chat.send` SHALL post the user's message and queue one reply from the single participant. `chat.regenerate(messageId)` SHALL stream a new variant into the same message, keeping earlier variants (D-58; an interrupted reply offers one chip, Regenerate). Sending to a paused 1:1 session SHALL resume it first (`session.resumed`), unless it is paused by the daily cap and the cap is still reached. Under the `agent` profile in M9, a 1:1 turn SHALL retrieve no knowledge and no memories, and a sent message SHALL start no query embedding, until the plan's gates exist.
 
 #### Scenario: Regenerate keeps the original
 - **WHEN** a completed reply is regenerated
@@ -29,8 +29,14 @@ In a group session, `chat.send` SHALL post the user's message, then answer with:
   under `naive` and `scripted` the router's up-front picks, up to 2 responders in all; `everyone` adds every other
   eligible participant; `mentioned` adds none.
 
-Muted participants SHALL be skipped as `muted`, and exhausted unmentioned ones as `exhausted`. When every mentioned
-participant is asleep, each SHALL get the asleep note and nobody else SHALL answer, in every profile.
+Muted participants SHALL be skipped as `muted`, and exhausted unmentioned ones as `exhausted`. A muted participant SHALL
+never reply, even when mentioned: each muted mention SHALL get the note "{name} is muted." and be dropped from the mentions,
+and when every mention was muted nobody else SHALL answer. That note is for the user: it SHALL NOT enter any prompt or summary, and neither SHALL any other note about the app rather than the scene ("Top someone up…", "End the debate to finish.", a recap or verdict that failed); story notes such as "{name} is asleep" or "{name} has left." stay. When every mentioned participant is asleep, each SHALL get the
+asleep note and nobody else SHALL answer, in every profile.
+
+#### Scenario: A muted participant is mentioned
+- **WHEN** a participant is muted and the user's message mentions only them
+- **THEN** the log gets "{name} is muted." and nobody replies
 
 #### Scenario: Auto policy with a mention
 - **WHEN** a three-person group with policy `auto` receives a message mentioning one participant
@@ -207,7 +213,7 @@ When a slot comes up and nobody on its side is awake (in a panel, nobody on the 
 - **THEN** the debate pauses again with the same notes
 
 ### Requirement: The verdict knows the missed turns
-When a debate reaches its verdict, the turns each side missed SHALL be computed from the log (the slots of every reached phase-iteration minus that side's arguments), with the reason "asleep" when the side had a skip or pause note there, or "the debate ended early". The verdict's prose SHALL say so plainly.
+When a debate reaches its verdict, the turns each side missed SHALL be computed from the log (the slots of every reached phase-iteration minus that side's arguments), with the reason "asleep" when most of them were missed in a phase-iteration where the side had a skip or pause note (an Ask to an asleep member uses no slot and gives no reason), or "the debate ended early". The verdict's prose SHALL say so plainly.
 
 #### Scenario: A side that slept through a round
 - **WHEN** the Opposition missed both rebuttal slots asleep and the user ended the debate during the pause

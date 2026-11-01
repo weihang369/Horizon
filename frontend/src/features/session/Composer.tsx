@@ -17,7 +17,7 @@ import { KeyIcon, SendIcon, StopIcon } from "../../ui/icons";
 import { entities } from "../../stores/entities";
 import { useUi } from "../../stores/ui";
 import {
-  backspaceMention, filterCandidates, insertMention, mentionBus, mentionIds, mentionQueryAt, mentionSpans, moveMention,
+  backspaceMention, filterCandidates, insertMention, mentionBus, mentionIds, mentionNames, mentionQueryAt, mentionSpans, moveMention,
   type MentionCandidate,
 } from "./mentions";
 import { firstName, useSessionCtx } from "./sessionContext";
@@ -76,7 +76,10 @@ export function Composer({
   const candidates = useMemo<MentionCandidate[]>(() => {
     const parts = session?.participants ?? [];
     if (parts.length < 2) return [];
-    return parts.map((p) => ({ id: p.characterId, name: firstName(chars[p.characterId]?.profile.name) || p.characterId })).filter((c) => c.name);
+    return mentionNames(parts.map((p) => {
+      const full = chars[p.characterId]?.profile.name ?? "";
+      return { id: p.characterId, full, first: firstName(full) || p.characterId };
+    })).filter((c) => c.name);
   }, [session?.participants, chars]);
 
   const setText = (t: string, caret?: number) => {

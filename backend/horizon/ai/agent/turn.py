@@ -41,7 +41,7 @@ from horizon.ai.language import language_cue
 from horizon.ai.llm import llm_request
 from horizon.ai.naive.prompt import SUMMARY_HEADING, TRAILING_CUE, turn_cue
 from horizon.ai.naive.tag_parser import ParsedEmotion, TagParser
-from horizon.ai.naive.turn import NaiveTurnEngine
+from horizon.ai.naive.turn import NaiveTurnEngine, turn_user_line
 from horizon.domain.pricing import count_tokens
 from horizon.gateway.chat import ChatRequest
 
@@ -147,12 +147,16 @@ class AgentTurnEngine(NaiveTurnEngine):
         """M10 (group-watch D10): the label of the bytes this turn sent. A G3 "second" or "next" sentence in the cue
         makes it `agent-3`; M11 (debate D10): the reworded steer sentence `agent-5`, a debate argument's cue `agent-7`;
         each one higher with the mood line on. Every other request keeps M9's `agent-1` / `agent-2`. M12 (rag D16):
-        a request carrying the documents block adds `+docs-1`, the not-found block `+nodocs-1`."""
+        a request carrying the documents block adds `+docs-1`, the not-found block `+nodocs-1`. A persona that reads a
+        "Relationship to you" (the speaker's own, "You are Kai's …", or the others' in a group) adds `+rel-1` (T-03)."""
         base = self._base_version(ctx)
         block = self.block(ctx) if ctx is not None else None
         label = getattr(block, "label", None)
         safety = ctx.plan.safety if ctx is not None and ctx.plan is not None else None
-        return (f"{base}+{label}-1" if label else base) + (safety.label if safety is not None else "")  # M14 (D6)
+        rel = "+rel-1" if ctx is not None and (str(ctx.speaker.profile.get("relationshipToUser") or "").strip() or (
+            ctx.session.mode == "group" and any(
+                p.relation.strip() for p in ctx.session.participants if p.character_id != ctx.speaker.id))) else ""
+        return (f"{base}+{label}-1" if label else base) + rel + (safety.label if safety is not None else "")  # M14 (D6)
 
     def block(self, ctx: TurnContext) -> Any:
         """M12 (rag D16): the documents block from the frozen plan, never a retriever (ai-ports)."""
@@ -301,7 +305,7 @@ class AgentTurnEngine(NaiveTurnEngine):
         tail = str(req.messages[-1]["content"]) if has_tail else ""
         history_msgs = req.messages[len(prefix):len(req.messages) - (1 if has_tail else 0)]
         history = sum(count_tokens(str(m["content"])) for m in history_msgs)
-        latest = next((clip(m.content) for m in reversed(ctx.session.recent) if m.author_type == "user"), "")
+        latest = clip(turn_user_line(ctx))
         user = count_tokens(latest) if latest else 0
         block_tokens = count_tokens(block.content) if block is not None and block.content else 0
         tail_memory = count_tokens(block.memory_text) if block is not None and block.memory_text else 0

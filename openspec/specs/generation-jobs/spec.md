@@ -157,7 +157,7 @@ Every payload SHALL validate against the contract schema.
 - **THEN** it receives `task.update` events for that job, then exactly one `job.done` whose job is terminal
 
 ### Requirement: Job fault scenarios
-In test mode, `image_fail_partial` SHALL make the second image task of the next jobs fail at 60 % on its first attempt. `image_fail_all` SHALL make every image task fail. `song_fails` SHALL make theme-song tasks fail. Each failure is a retryable `provider_error`, and with `image_fail_partial` a retry succeeds.
+In test mode, `image_fail_partial` SHALL make the second image task of the next jobs fail at 60 % on its first attempt. `image_fail_all` SHALL make every portrait, emotion and sheet task fail (the blink frame is not faulted). `song_fails` SHALL make theme-song tasks fail. Each failure is a retryable `provider_error`, and with `image_fail_partial` a retry succeeds.
 
 #### Scenario: Partial failure then retry
 - **WHEN** `image_fail_partial` is applied, Standard mode is set, and a `portrait_candidates` job runs

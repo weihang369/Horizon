@@ -8,7 +8,7 @@ import type { Character, ThemeSong } from "@/contract/types";
 import { Button, ErrorTape, PauseIcon, PlayIcon, Tape } from "@/ui";
 import { formatUsd } from "@/ui";
 import { cx } from "@/ui/cx";
-import { isRunning, startGeneration, useCharacterJobs, useEstimate } from "@/features/wizard/generate";
+import { isRunning, startGeneration, useCharacterJobs, useEstimate, useJobWait } from "@/features/wizard/generate";
 import { BARS, fakePeaks, usePeaks } from "./peaks";
 import { themeLabel, useAudioState } from "./ThemePlayer";
 import { songCredit } from "./songCredit";
@@ -25,6 +25,7 @@ export function ThemeTrack({ c, song }: { c: Character; song: ThemeSong | null }
   const jobs = useCharacterJobs(c.id);
   const job = useJob(jobs.song).data;
   const est = useEstimate({ characterId: c.id, kind: "song" });
+  const wait = useJobWait(c.id);
   const st = useAudioState();
   const composing = isRunning(job) || song?.status === "generating";
   const ready = song?.status === "ready" && !!song.url;
@@ -138,7 +139,7 @@ export function ThemeTrack({ c, song }: { c: Character; song: ThemeSong | null }
       )}
 
       {!stalled && <div className={s.actions}>
-        <Button variant={phase === "ready" ? "secondary" : "primary"} cost={est ?? undefined} disabled={composing || archived} onClick={compose}>
+        <Button variant={phase === "ready" ? "secondary" : "primary"} cost={est ?? undefined} disabled={composing || archived || !!wait} title={composing ? undefined : wait ?? undefined} onClick={compose}>
           {phase === "ready" ? "↻ Regenerate (replaces)" : "Compose ▸"}
         </Button>
         <span className={s.small}>One theme per character. Regenerating replaces it; there is no history.</span>

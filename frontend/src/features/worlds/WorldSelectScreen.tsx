@@ -2,6 +2,7 @@
 // Hover/focus straightens to −4° and lifts 12 px with a hover tick; a card shatters into its Hub (README §3.1).
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { KeyboardEvent, MouseEvent } from "react";
+import { run } from "../../app/errors";
 import { openOverlay, toast } from "../../app/layers";
 import { useShortcut } from "../../app/shortcuts";
 import { audio } from "../../audio/engine";
@@ -171,7 +172,7 @@ export function WorldSelectScreen() {
             body="Every story needs a horizon."
             action={{ label: "+ Create world", run: () => openOverlay("O02", {}) }}
           />
-          <Button variant="ghost" size="sm" onClick={() => void client.admin.resetDemo()}>Restore demo data</Button>
+          <RestoreDemo />
         </div>
       ) : !error && (
         <div className={s.railWrap}>
@@ -251,4 +252,16 @@ function WorldCard({ world: w, index }: { world: World; index: number }) {
       </button>
     </div>
   );
+}
+
+/** The empty state's "Restore demo data": busy while it runs, then the same toast as Settings → Data (J6-06). */
+function RestoreDemo() {
+  const [busy, setBusy] = useState(false);
+  const restore = async () => {
+    setBusy(true);
+    const done = await run(() => client.admin.resetDemo().then(() => true));
+    setBusy(false);
+    if (done) toast({ variant: "success", text: "Demo data restored." });
+  };
+  return <Button variant="ghost" size="sm" disabled={busy} onClick={() => void restore()}>{busy ? "Restoring…" : "Restore demo data"}</Button>;
 }

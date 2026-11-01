@@ -483,7 +483,7 @@ export const GlobalEventSchema = z.discriminatedUnion("type", [
   so({ type: z.literal("budget.warning"), scope: BudgetScopeSchema, spentUsd: z.number(), capUsd: z.number() }),
   so({
     type: z.literal("budget.reached"), scope: BudgetScopeSchema, spentUsd: z.number(), capUsd: z.number(),
-    sessionId: z.string().optional(), jobId: z.string().optional(),
+    paused: z.boolean(), sessionId: z.string().optional(), jobId: z.string().optional(),
   }),
   so({ type: z.literal("job.progress"), job: GenerationJobSchema }),
   so({ type: z.literal("task.update"), jobId: id("job"), task: GenerationTaskSchema }),

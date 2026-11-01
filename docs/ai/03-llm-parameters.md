@@ -429,7 +429,7 @@ fails it, a developer changes the pinned model in config and re-runs the eval.
 - **Settings → Models becomes a read-only "Models in use" panel.** For each role it shows:
   - the model slug and what it is for;
   - its price;
-  - the **Test** button.
+  - no Test button (D-107: Connection's Test covers it).
 
   A line says: "Tuned for these models. Custom models are planned for v2."
 - **Where the price comes from.** `AppSettings` carries no prices (only `pricing.period` and `nextChangeAt`), and

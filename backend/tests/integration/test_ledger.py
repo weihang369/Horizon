@@ -113,6 +113,16 @@ async def test_deleted_character_keeps_the_spend(api: Api) -> None:
     assert len(await rows(api)) == 1
 
 
+async def test_a_late_row_of_a_deleted_session_keeps_the_spend_and_the_drain(api: Api) -> None:
+    """Audit A-01: the session went while its call was in flight; the row used to fail `usage_records.session_id`'s
+    foreign key and roll back with its drain."""
+    await set_energy(api, 500)
+    await writer(api).record(row(session_id="ses_gone"), drain=True)
+    (r,) = await rows(api)
+    assert r["session_id"] is None and r["cost_usd"] == 0.00042
+    assert await energy(api) == (495, 5)
+
+
 def test_module_has_no_network_import() -> None:
     assert not hasattr(energy_writes, "httpx")
 

@@ -57,6 +57,8 @@ While the effective key comes from the environment or `.env`, `PUT /settings/key
 ### Requirement: Settings report where the key comes from
 When there is a key, `AppSettings.openRouterKeySource` SHALL be `env` for a key from `OPENROUTER_API_KEY` (environment or `.env`) and `app` for a key saved through `PUT /settings/key`; without a key it SHALL be absent (D-106). For an `env` key, Settings → Connection SHALL show that it comes from `.env` and how to change it, instead of the key field, Save and Clear (which the backend refuses for it); Test connection SHALL stay.
 
+In the mock build (the online demo), Settings → Connection, the key prompt and the onboarding key step SHALL show, instead of a key field, that the demo never uses a key and everything in it was recorded, with a link to running Horizon locally.
+
 #### Scenario: Key from .env
 - **WHEN** `OPENROUTER_API_KEY` is set and Settings → Connection opens
 - **THEN** settings report `openRouterKeySource: "env"`, and the tab shows "from .env" with no key field, Save or Clear

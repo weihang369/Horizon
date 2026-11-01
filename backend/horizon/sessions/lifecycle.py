@@ -80,6 +80,8 @@ async def create(rt: Runtime, body: Wire) -> Wire:
             raise not_found("Character")  # NFR-23: never "exists elsewhere"
         if any(c["status"] != "approved" for c in cast):
             raise validation("Drafts and archived characters can't join sessions.")
+        if len(set(ids)) != len(ids):   # pass 2 J3-05: was a 500 from the participants key
+            raise validation("Each character can join a session once.", {"field": "characterIds"})
         lo, hi = (1, 1) if mode == "one_on_one" else (2, 5)
         if not lo <= len(cast) <= hi:
             raise validation(f"This mode needs {lo}–{hi} characters.",
@@ -182,6 +184,8 @@ def _new_session(rt: Runtime, body: Wire, w: Any, cast: list[Any]) -> Wire:
     elif mode == "watch":
         config = {"premise": cfg_in.get("premise") or "An ordinary afternoon.", "maxTurns": cfg_in.get("maxTurns") or 20,
                   "paceMs": cfg_in.get("paceMs") or 1500, "openingSpeaker": cfg_in.get("openingSpeaker") or "auto"}
+        if config["openingSpeaker"] not in {"auto", *(c["id"] for c in cast)}:
+            config["openingSpeaker"] = "auto"   # pass 2 J3-09: what plays (auto) is what is stored
         state = {"status": "paused", "turnsTaken": 0, "turnLimit": config["maxTurns"]}
         music = body.get("musicPolicy") or "follow_speaker"
     two_sided = mode == "debate" and config is not None and config.get("format") == "two_sided"

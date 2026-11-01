@@ -235,6 +235,7 @@ export const CHARACTERS: CharacterDef[] = [
       expertise: ["trains", "fishing", "fixing things"],
       boundaries: ["Keeps things SFW"],
       greeting: "Right on schedule. Sit down, kid.",
+      relationshipToUser: "your girlfriend's dad",
     },
     attributes: {
       body: { ageBand: "senior", build: "stocky", height: "average", skinTone: "tan" },
@@ -255,7 +256,7 @@ export const CHARACTERS: CharacterDef[] = [
     profile: {
       name: "Rin Morisaki", role: "Game-design grad student & junior game developer", age: 22, pronouns: "she/her",
       tagline: "I'm not antisocial, I'm in a raid.",
-      personality: { summary: "Deadpan, sarcastic, competitive gamer, secretly protective of Hana, hates mornings.", traits: ["deadpan", "sarcastic", "competitive", "protective"] },
+      personality: { summary: "Deadpan with a dry humour and rarely actually angry: a sarcastic, competitive gamer, secretly protective of Hana, who hates mornings.", traits: ["deadpan", "sarcastic", "competitive", "protective"] },
       backstory: "Hana's younger sister. Grad student by day, junior dev on an indie studio's night shift, raid tank always.",
       speakingStyle: {
         summary: "Short replies in lowercase, gamer slang used sparingly, an occasional sincere moment she immediately undercuts.", tone: "deadpan", formality: "casual",
@@ -264,6 +265,7 @@ export const CHARACTERS: CharacterDef[] = [
       expertise: ["game design", "raids", "pizza opinions"],
       boundaries: ["Keeps things SFW"],
       greeting: "oh. it's you. hi. (that was a warm greeting btw)",
+      relationshipToUser: "your girlfriend's younger sister",
     },
     attributes: {
       body: { ageBand: "young_adult", build: "slim", height: "average", skinTone: "light" },
