@@ -161,7 +161,9 @@ async def first_opening(actor: SessionActor) -> str | None:
 
 async def next_slot(actor: SessionActor) -> tuple[int, str | None, Fill] | None:
     """The next slot of this phase and how it is filled (D3), or None when the phase is done. A slot with a prefetched
-    opening is that member's; otherwise the slot rule decides from who is awake now."""
+    opening is that member's while they still exist (its energy was drawn when it started, so asleep doesn't matter);
+    a deleted member's prefetch is dropped and the slot rule decides, so the side's "has left" note comes on this
+    step rather than after a silent "missing" turn (v1.1 final check)."""
     cfg, cast = cfg_of(actor), _cast(actor)
     slots = phase_slots(cfg, cast)
     cur = cursor(_messages(actor))
@@ -170,7 +172,10 @@ async def next_slot(actor: SessionActor) -> tuple[int, str | None, Fill] | None:
     side = slots[cur.used]
     pf = actor.mode.debate_prefetch.get(cur.used)
     if pf is not None:
-        return cur.used, side, Fill("speak", who=pf.spec.speaker, eligible=(pf.spec.speaker,))
+        if await runner(actor).energy_now(pf.spec.speaker) is not None:
+            return cur.used, side, Fill("speak", who=pf.spec.speaker, eligible=(pf.spec.speaker,))
+        actor.mode.debate_prefetch.pop(cur.used, None)
+        await pf.discard()
     side_members = members(cfg, cast, side)
     awake = {c: not await is_asleep(actor, c) for c in side_members}
     return cur.used, side, fill(side_members, cur.heard, awake)

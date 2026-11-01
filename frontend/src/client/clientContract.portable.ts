@@ -899,10 +899,8 @@ export function runPortableContract(label: string, makeHarness: MakeHarness, opt
       });
       await tick(20000);
       await c.characters.delete("chr_seedVictor");
-      for (let i = 0; i < 3; i++) {
-        await c.debate.next(s.session.id);
-        await tick(20000);
-      }
+      await c.debate.next(s.session.id);   // ONE press says so, even with Victor's opening prefetched on the backend
+      await tick(20000);
       const texts = (await c.sessions.messages(s.session.id)).map((m) => m.content);
       expect(texts).toContain("Victor has left.");
       expect(texts).toContain("The Opposition has no one left. End the debate to finish.");

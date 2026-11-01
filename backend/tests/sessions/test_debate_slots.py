@@ -212,13 +212,16 @@ async def test_a_fresh_debate_first_command_does_not_start_a_second_chain(api: A
 
 
 async def test_a_deleted_debater_has_left_rather_than_asleep(api: Api) -> None:
-    """Pass 2 J3-08: a side whose only member was deleted mid-debate says so and offers End, with no Top up."""
+    """Pass 2 J3-08: a side whose only member was deleted mid-debate says so and offers End, with no Top up. In the
+    opening round Victor's opening was prefetched at Amara's turn: ONE Next must say so (the prefetch is dropped, not
+    run as a silent "missing" turn that used up the press; v1.1 final check)."""
     sid = await debate(api, cast=[AMARA, VICTOR], sides={"prop": [AMARA], "opp": [VICTOR]}, autoAdvance=False)
     await api.drive(20000)
+    actor = await api.rt.sessions.get(sid)
+    assert actor.mode.debate_prefetch   # the case under test: Victor's opening is waiting
     assert (await api.client.delete(f"{API}/characters/{VICTOR}")).status_code == 204
-    for _ in range(3):
-        await command(api, sid, "debate/next")
-        await api.drive(20000)
+    await command(api, sid, "debate/next")
+    await api.drive(20000)
     msgs = await messages(api, sid)
     assert any(m["content"] == "Victor has left." for m in msgs)
     assert any(m["content"] == "The Opposition has no one left. End the debate to finish." for m in msgs)
